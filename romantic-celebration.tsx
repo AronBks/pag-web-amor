@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Heart, Calendar, Camera, Star, Sparkles, Coffee, MapPin, Home, Gamepad2 } from "lucide-react"
 import { ImageCarousel } from "@/components/ui/image-carousel"
 import { HerGallery } from "@/components/ui/her-gallery"
+import { SpecialMessage } from "@/components/ui/special-message"
 
 export default function Component() {
   const [currentSection, setCurrentSection] = useState("main")
@@ -17,28 +18,28 @@ export default function Component() {
       title: "Café y Postres Nuevos 🧁",
       description: "Probar ese lugar que vimos en redes sociales",
       icon: <Coffee className="text-brown-600" size={32} />,
-      details: "Vamos a ese café aesthetic que encontramos, pedimos algo diferente y nos tomamos fotos bonitas para nuestras historias",
+      details: "Ir a ese café que vimos y probar sus postres juntos: pedir algo nuevo, compartir una porción y tomar fotos para recordar la tarde.",
     },
     {
       id: 2,
       title: "Aventura Urbana 🌟",
       description: "Explorar rincones nuevos de la ciudad",
       icon: <MapPin className="text-blue-600" size={32} />,
-      details: "Actuamos como turistas en nuestra propia ciudad, visitamos murales, miradores o lugares que hemos visto en Instagram",
+      details: "Perdernos un rato por la ciudad, descubrir murales, cafeterías escondidas y miradores, y terminar con una sorpresa improvisada.",
     },
     {
       id: 3,
       title: "Gaming Night Mejorada 🎮",
       description: "Juegos nuevos, snacks y competencia sana",
       icon: <Gamepad2 className="text-purple-600" size={32} />,
-      details: "Compramos esos snacks que tanto nos gustan, probamos juegos nuevos y vemos quién es mejor... spoiler: siempre gano yo 😏",
+      details: "Noche de juegos con snacks especiales, risas y desafíos; el objetivo: pasarlo increíble juntos (y sí, una pequeña competencia sana).",
     },
     {
       id: 4,
       title: "Date Night en Casa 🏠",
       description: "Cocinar algo especial y series/películas",
       icon: <Home className="text-green-600" size={32} />,
-      details: "Cocinamos esa receta que guardamos en TikTok, ponemos una serie nueva o esa película que queremos ver, y nos acurrucamos",
+      details: "Cocinamos algo juntos, probamos una nueva receta, ponemos esa película que nos encanta y nos quedamos abrazados hasta quedarnos dormidos.",
     },
   ]
 
@@ -46,16 +47,16 @@ export default function Component() {
     {
       id: 1,
       title: "Nuestro primer viaje juntos",
-      hint: "Ya tengo algunos destinos en mente... ¿playa o montaña? 🏖️⛰️",
+      hint: "Tengo algunos destinos en mente... ¿playa o montaña? 🏖️⛰️",
       icon: "✈️",
       description: "Planear una escapada memorable, solo nosotros dos",
     },
     {
       id: 2,
-      title: "Algo muy especial que tengo preparado",
-      hint: "Es una sorpresa que llevo planeando desde hace tiempo... 🎁✨",
-      icon: "🎉",
-      description: "Una sorpresa que va a hacer que este año sea inolvidable",
+      title: "Escapada de fin de semana",
+      hint: "Un plan cortito para desconectar y crear recuerdos juntos... 🌄☕",
+      icon: "🚗",
+      description: "Un fin de semana fuera para explorar y relajarnos, sin prisas y solo nosotros.",
     },
     {
       id: 3,
@@ -146,7 +147,7 @@ export default function Component() {
                   </p>
                 </div>
 
-                <div className="grid md:grid-cols-3 gap-4 mt-8">
+                <div className="grid md:grid-cols-3 gap-4 mt-8 items-stretch">
                   <Button
                     onClick={() => setCurrentSection("plans")}
                     className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white p-6 h-auto flex flex-col gap-2 rounded-xl shadow-lg"
@@ -173,6 +174,12 @@ export default function Component() {
                     <span className="font-semibold">Un Rincón para Ti</span>
                     <span className="text-sm opacity-90">Una galería dedicada a ti</span>
                   </Button>
+                </div>
+
+                <div className="flex justify-center mt-6">
+                  <div className="w-full md:w-1/3">
+                    <SpecialMessage />
+                  </div>
                 </div>
               </CardContent>
             </Card>
