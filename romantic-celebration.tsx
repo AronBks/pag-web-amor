@@ -7,6 +7,7 @@ import { Heart, Calendar, Camera, Star, Sparkles, Coffee, MapPin, Home, Gamepad2
 import { ImageCarousel } from "@/components/ui/image-carousel"
 import { HerGallery } from "@/components/ui/her-gallery"
 import { SpecialMessage } from "@/components/ui/special-message"
+import BackButton from "@/components/ui/back-button"
 
 export default function Component() {
   const [currentSection, setCurrentSection] = useState("main")
@@ -147,7 +148,7 @@ export default function Component() {
                   </p>
                 </div>
 
-                <div className="grid md:grid-cols-3 gap-4 mt-8 items-stretch">
+                <div className="grid md:grid-cols-2 gap-4 mt-8 items-stretch">
                   <Button
                     onClick={() => setCurrentSection("plans")}
                     className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white p-6 h-auto flex flex-col gap-2 rounded-xl shadow-lg"
@@ -155,15 +156,6 @@ export default function Component() {
                     <Calendar size={32} />
                     <span className="font-semibold">Nuevos Planes</span>
                     <span className="text-sm opacity-90">Ideas frescas para nosotros</span>
-                  </Button>
-
-                  <Button
-                    onClick={() => setCurrentSection("future")}
-                    className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white p-6 h-auto flex flex-col gap-2 rounded-xl shadow-lg"
-                  >
-                    <Star size={32} />
-                    <span className="font-semibold">Proyectos Juntos</span>
-                    <span className="text-sm opacity-90">Lo que quiero lograr contigo</span>
                   </Button>
 
                   <Button
@@ -177,7 +169,7 @@ export default function Component() {
                 </div>
 
                 <div className="flex justify-center mt-6">
-                  <div className="w-full md:w-1/3">
+                  <div className="w-full md:w-2/3 lg:w-1/2">
                     <SpecialMessage />
                   </div>
                 </div>
@@ -251,13 +243,7 @@ export default function Component() {
         {currentSection === "plans" && (
           <div className="space-y-6">
             <div className="text-center">
-              <Button
-                onClick={() => setCurrentSection("main")}
-                variant="outline"
-                className="mb-6 border-pink-300 text-pink-600"
-              >
-                ← Volver
-              </Button>
+              <BackButton onClick={() => setCurrentSection("main")} label="← Volver" />
               <h2 className="text-3xl font-bold text-pink-700 mb-4">Planes que tengo en mente</h2>
               <p className="text-pink-500">Dime cuál te llama más la atención</p>
             </div>
@@ -293,13 +279,7 @@ export default function Component() {
         {currentSection === "future" && (
           <div className="space-y-6">
             <div className="text-center">
-              <Button
-                onClick={() => setCurrentSection("main")}
-                variant="outline"
-                className="mb-6 border-purple-300 text-purple-600"
-              >
-                ← Volver
-              </Button>
+              <BackButton onClick={() => setCurrentSection("main")} label="← Volver" />
               <h2 className="text-3xl font-bold text-purple-700 mb-4">Cosas que quiero hacer contigo</h2>
               <p className="text-purple-500">Planes a futuro que tengo en mente...</p>
             </div>

@@ -24,6 +24,42 @@ const images = [
   "/fotos-nosotros/foto 15.jpg",
 ]
 
+const imageDates: Record<string, string> = {
+  "/fotos-nosotros/foto 1.jpg": "2025-06-10",
+  "/fotos-nosotros/foto 2.jpg": "2025-06-10",
+  "/fotos-nosotros/foto 3.jpg": "2025-06-25",
+  "/fotos-nosotros/foto 4.jpg": "2025-07-07",
+  "/fotos-nosotros/foto 5.jpg": "2025-07-09",
+  "/fotos-nosotros/foto 6.jpg": "2025-07-11",
+  "/fotos-nosotros/foto 7.jpg": "2025-07-19",
+  "/fotos-nosotros/foto 8.jpg": "2025-07-19",
+  "/fotos-nosotros/foto 9.jpg": "2025-08-02",
+  "/fotos-nosotros/foto 10.jpg": "2025-09-08",
+  "/fotos-nosotros/foto 11.jpg": "2025-09-17",
+  "/fotos-nosotros/foto 12.jpg": "2025-09-22",
+  "/fotos-nosotros/foto 13.jpg": "2025-09-26",
+  "/fotos-nosotros/foto 14.jpg": "2025-09-27",
+  "/fotos-nosotros/foto 15.jpg": "2025-09-15",
+}
+
+function formatDateLong(dateStr: string) {
+  try {
+    const m = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+    let d: Date
+    if (m) {
+      const year = parseInt(m[1], 10)
+      const month = parseInt(m[2], 10) - 1
+      const day = parseInt(m[3], 10)
+      d = new Date(year, month, day)
+    } else {
+      d = new Date(dateStr)
+    }
+    return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
+  } catch (e) {
+    return dateStr
+  }
+}
+
 export function ImageCarousel() {
   const [emblaRef] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 3000 })])
 
@@ -38,8 +74,17 @@ export function ImageCarousel() {
           <div className="flex">
             {images.map((src, index) => (
               <div className="flex-grow-0 flex-shrink-0 w-full min-w-0 pl-4" key={index}>
-                <div className="aspect-[4/3] rounded-xl overflow-hidden shadow-lg border-2 border-white bg-pink-50 flex items-center justify-center">
+                <div className="aspect-[4/3] rounded-xl overflow-hidden shadow-lg border-2 border-white bg-pink-50 flex items-center justify-center relative">
                   <img src={src} alt={`Foto ${index + 1}`} className="w-full h-full object-contain" />
+                  {imageDates[src] && (
+                    <div className="absolute left-4 top-4 bg-gradient-to-r from-pink-400 to-purple-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-lg flex items-center gap-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7 10h5v5H7z" opacity=".9" />
+                        <path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v13a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zM5 9h14v10H5z"/>
+                      </svg>
+                      <span className="text-[11px] leading-none">{formatDateLong(imageDates[src])}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

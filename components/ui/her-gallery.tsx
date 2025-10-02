@@ -20,7 +20,65 @@ const herPhotos = [
   "/fotos-nosotros/ella13.jpg",
   "/fotos-nosotros/ella14.jpg",
   "/fotos-nosotros/ella15.jpg",
+  "/fotos-nosotros/ella16.jpg",
+  "/fotos-nosotros/ella17.jpg",
+  "/fotos-nosotros/ella18.jpg",
+  "/fotos-nosotros/ella19.jpg",
+  "/fotos-nosotros/ella20.jpg",
+  "/fotos-nosotros/ella21.jpg",
+  "/fotos-nosotros/ella22.jpg",
+  "/fotos-nosotros/ella23.jpg",
+  "/fotos-nosotros/ella24.png",
+  "/fotos-nosotros/ella25.png",
 ];
+
+// map each photo to an ISO-ish date string we can format. Keep simple strings here.
+const herPhotoDates: Record<string, string> = {
+  "/fotos-nosotros/ella1.jpg": "",
+  "/fotos-nosotros/ella2.jpg": "2025-07-10",
+  "/fotos-nosotros/ella3.jpg": "2025-06-15",
+  "/fotos-nosotros/ella4.jpg": "2025-05-05",
+  "/fotos-nosotros/ella5.jpg": "2025-04-20",
+  "/fotos-nosotros/ella6.jpg": "2025-03-12",
+  "/fotos-nosotros/ella7.jpg": "2025-02-28",
+  "/fotos-nosotros/ella8.jpg": "2025-01-01",
+  "/fotos-nosotros/ella9.jpg": "2024-12-30",
+  "/fotos-nosotros/ella10.jpg": "2024-11-18",
+  "/fotos-nosotros/ella11.jpg": "2024-10-07",
+  "/fotos-nosotros/ella12.jpg": "2024-09-22",
+  "/fotos-nosotros/ella13.jpg": "2025-08-02",
+  "/fotos-nosotros/ella14.jpg": "2024-07-14",
+  "/fotos-nosotros/ella15.jpg": "2024-06-09",
+  "/fotos-nosotros/ella16.jpg": "",
+  "/fotos-nosotros/ella17.jpg": "",
+  "/fotos-nosotros/ella18.jpg": "",
+  "/fotos-nosotros/ella19.jpg": "",
+  "/fotos-nosotros/ella20.jpg": "",
+  "/fotos-nosotros/ella21.jpg": "",
+  "/fotos-nosotros/ella22.jpg": "",
+  "/fotos-nosotros/ella23.jpg": "",
+  "/fotos-nosotros/ella24.png": "",
+  "/fotos-nosotros/ella25.png": "",
+}
+
+function formatDateLong(dateStr: string) {
+  try {
+    // Parse YYYY-MM-DD to avoid timezone shifts when using new Date(string)
+    const m = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+    let d: Date
+    if (m) {
+      const year = parseInt(m[1], 10)
+      const month = parseInt(m[2], 10) - 1
+      const day = parseInt(m[3], 10)
+      d = new Date(year, month, day)
+    } else {
+      d = new Date(dateStr)
+    }
+    return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
+  } catch (e) {
+    return dateStr
+  }
+}
 
 interface HerGalleryProps {
   onBack: () => void;
@@ -50,11 +108,22 @@ export function HerGallery({ onBack }: HerGalleryProps) {
               <div key={index} className="break-inside-avoid">
                 <Card className="bg-pink-50 border-pink-200">
                   <CardContent className="p-4">
-                    <img
-                      src={src}
-                      alt="Foto especial de mi novia"
-                      className="w-full h-auto rounded-lg shadow-md mb-4"
-                    />
+                    <div className="relative">
+                      <img
+                        src={src}
+                        alt="Foto especial de mi novia"
+                        className="w-full h-auto rounded-lg shadow-md mb-4"
+                      />
+                      {herPhotoDates[src] && (
+                        <div className="absolute left-3 top-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-lg flex items-center gap-2">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M7 10h5v5H7z" opacity=".9" />
+                            <path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v13a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zM5 9h14v10H5z"/>
+                          </svg>
+                          <span className="text-[11px] leading-none">{formatDateLong(herPhotoDates[src])}</span>
+                        </div>
+                      )}
+                    </div>
                     <div className="text-center">
                       <p className="text-sm text-pink-700 font-semibold">
                         Cuando sonríes así, todo se calma — tu risa es mi canción favorita y mi lugar seguro.
@@ -390,6 +459,264 @@ export function HerGallery({ onBack }: HerGalleryProps) {
               </div>
             );
           }
+          if (src.includes("ella16.jpg")) {
+            return (
+              <div key={index} className="break-inside-avoid">
+                <Card className="bg-pink-50 border-pink-200">
+                  <CardContent className="p-4">
+                    <img
+                      src={src}
+                      alt="Foto especial de mi novia"
+                      className="w-full h-auto rounded-lg shadow-md mb-4"
+                    />
+                    <div className="text-center">
+                      <p className="text-sm text-pink-700 font-semibold">
+                        Esa expresión tuya, entre sueños y luces, me recuerda que las cosas pequeñas son las que hacen grandes los recuerdos.
+                      </p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Siempre encuentro poesía en tus gestos — gracias por regalarme instantes que guardo como tesoros.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            );
+          }
+          if (src.includes("ella17.jpg")) {
+            return (
+              <div key={index} className="break-inside-avoid">
+                <Card className="bg-pink-50 border-pink-200">
+                  <CardContent className="p-4">
+                    <img
+                      src={src}
+                      alt="Foto especial de mi novia"
+                      className="w-full h-auto rounded-lg shadow-md mb-4"
+                    />
+                    <div className="text-center">
+                      <p className="text-sm text-pink-700 font-semibold">
+                        Esas dos colitas te quedan como un hechizo; te ves juguetona y libre, y no puedo evitar sonreír.
+                      </p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Tu estilo siempre encuentra la forma perfecta de sorprenderme — pequeñas locuras, grandes recuerdos.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            );
+          }
+          if (src.includes("ella18.jpg")) {
+            return (
+              <div key={index} className="break-inside-avoid">
+                <Card className="bg-pink-50 border-pink-200">
+                  <CardContent className="p-4">
+                    <img
+                      src={src}
+                      alt="Foto especial de mi novia con nuestro conejo"
+                      className="w-full h-auto rounded-lg shadow-md mb-4"
+                    />
+                    <div className="text-center">
+                      <p className="text-sm text-pink-700 font-semibold">
+                        Tayron en tus brazos y tú son la definición de ternura; esa mirada dice más que mil palabras.
+                      </p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Gracias por cuidar de nuestras pequeñas alegrías — contigo, incluso un conejo se siente en casa.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            );
+          }
+          if (src.includes("ella19.jpg")) {
+            return (
+              <div key={index} className="break-inside-avoid">
+                <Card className="bg-pink-50 border-pink-200">
+                  <CardContent className="p-4">
+                    <img
+                      src={src}
+                      alt="Foto especial de mi novia"
+                      className="w-full h-auto rounded-lg shadow-md mb-4"
+                    />
+                    <div className="text-center">
+                      <p className="text-sm text-pink-700 font-semibold">
+                        En esta foto veo tu calma y esa ternura que siempre te acompaña — me encanta cómo cuidas cada detalle.
+                      </p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Tus pequeños gestos convierten lo cotidiano en algo mágico; gracias por dejarme ser testigo.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            );
+          }
+          if (src.includes("ella20.jpg")) {
+            return (
+              <div key={index} className="break-inside-avoid">
+                <Card className="bg-pink-50 border-pink-200">
+                  <CardContent className="p-4">
+                    <img
+                      src={src}
+                      alt="Foto especial de mi novia"
+                      className="w-full h-auto rounded-lg shadow-md mb-4"
+                    />
+                    <div className="text-center">
+                      <p className="text-sm text-pink-700 font-semibold">
+                        Hay algo en esa mirada que me hace prometer mil aventuras; me encanta cómo eliges vivir con intensidad y ternura.
+                      </p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Tu presencia transforma cualquier lugar en hogar — gracias por ser mi brújula y mi calma.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            );
+          }
+          if (src.includes("ella21.jpg")) {
+            return (
+              <div key={index} className="break-inside-avoid">
+                <Card className="bg-pink-50 border-pink-200">
+                  <CardContent className="p-4">
+                    <img
+                      src={src}
+                      alt="Foto especial de mi novia con sus conejos"
+                      className="w-full h-auto rounded-lg shadow-md mb-4"
+                    />
+                    <div className="text-center">
+                      <p className="text-sm text-pink-700 font-semibold">
+                        Verte con los tres pequeños juntos me llena el corazón — tu cariño los hace crecer felices y seguros.
+                      </p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Gracias por tanta ternura y por enseñarles a amar; tus hijos de pelaje son afortunados de tenerte.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            );
+          }
+          if (src.includes("ella22.jpg")) {
+            return (
+              <div key={index} className="break-inside-avoid">
+                <Card className="bg-pink-50 border-pink-200">
+                  <CardContent className="p-4">
+                    <img
+                      src={src}
+                      alt="Foto especial de mi novia con sus conejos"
+                      className="w-full h-auto rounded-lg shadow-md mb-4"
+                    />
+                    <div className="text-center">
+                      <p className="text-sm text-pink-700 font-semibold">
+                        En tus manos, hasta lo más suave parece más valiente; tus dos conejos lo saben y te siguen donde vas.
+                      </p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Tu ternura es su refugio — y verlo me recuerda lo afortunados que somos de tenerte.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            );
+          }
+          if (src.includes("ella23.jpg")) {
+            return (
+              <div key={index} className="break-inside-avoid">
+                <Card className="bg-pink-50 border-pink-200">
+                  <CardContent className="p-4">
+                    <img
+                      src={src}
+                      alt="Foto especial de mi novia con su conejito acostado"
+                      className="w-full h-auto rounded-lg shadow-md mb-4"
+                    />
+                    <div className="text-center">
+                      <p className="text-sm text-pink-700 font-semibold">
+                        Ese conejito acostadito parece un bebé abrazado a tu ternura; me derrito viendo lo protectora que eres.
+                      </p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Gracias por regalarle cariño y por esos momentos suaves que llenan de paz el día.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            );
+          }
+          if (src.includes("ella24.png")) {
+            return (
+              <div key={index} className="break-inside-avoid">
+                <Card className="bg-pink-50 border-pink-200">
+                  <CardContent className="p-4">
+                    <img
+                      src={src}
+                      alt="Foto especial de mi novia con tiara"
+                      className="w-full h-auto rounded-lg shadow-md mb-4"
+                    />
+                    <div className="text-center">
+                      <p className="text-sm text-pink-700 font-semibold">
+                        Con esa tiara pareces un sueño hecho princesa — preciosa y llena de fuerza a la vez.
+                      </p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Me encanta cómo te ves cuando brillas; siempre reina en mi corazón.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            );
+          }
+              if (src.includes("ella25.png")) {
+                return (
+                  <div key={index} className="break-inside-avoid">
+                    <Card className="bg-pink-50 border-pink-200">
+                      <CardContent className="p-4">
+                        <img
+                          src={src}
+                          alt="Foto especial de mi novia"
+                          className="w-full h-auto rounded-lg shadow-md mb-4"
+                        />
+                        <div className="text-center">
+                          <p className="text-sm text-pink-700 font-semibold">
+                            Recuerdo las noches en las que dormíamos juntos; tus abrazos eran mi refugio y mi calma.
+                          </p>
+                          <p className="text-xs text-gray-600 mt-1">
+                            Aunque ahora la distancia nos separe, siempre serás mi lugar seguro. Nunca lo olvidaré.
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                );
+              }
+          if (index >= 15) {
+            // New photos (ella16..ella23): show placeholder card with optional date
+            return (
+              <div key={index} className="break-inside-avoid">
+                <Card className="bg-pink-50 border-pink-200">
+                  <CardContent className="p-4">
+                    <div className="relative">
+                      <img src={src} alt={`Foto nueva ${index + 1}`} className="w-full h-auto rounded-lg shadow-md mb-4" />
+                      {herPhotoDates[src] && herPhotoDates[src].length > 0 && (
+                        <div className="absolute left-3 top-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-lg flex items-center gap-2">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M7 10h5v5H7z" opacity=".9" />
+                            <path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v13a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zM5 9h14v10H5z"/>
+                          </svg>
+                          <span className="text-[11px] leading-none">{formatDateLong(herPhotoDates[src])}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="text-center">
+                      <p className="text-sm text-pink-700 font-semibold">Pronto agregaré un mensaje bonito para esta foto.</p>
+                      <p className="text-xs text-gray-600 mt-1">Si quieres, dime qué quieres que ponga aquí.</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            );
+          }
+
           return (
             <div key={index} className="break-inside-avoid">
               <img
