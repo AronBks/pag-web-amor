@@ -4,7 +4,7 @@ import * as React from "react"
 import useEmblaCarousel from "embla-carousel-react"
 import Autoplay from "embla-carousel-autoplay"
 import { Card, CardContent } from "@/components/ui/card"
-import { Heart, ChevronLeft, ChevronRight } from "lucide-react"
+import { Heart } from "lucide-react"
 
 const images = [
   "/fotos-nosotros/foto 1.jpg",
@@ -22,8 +22,8 @@ const images = [
   "/fotos-nosotros/foto 13.jpg",
   "/fotos-nosotros/foto 14.jpg",
   "/fotos-nosotros/foto 15.jpg",
+  "/fotos-nosotros/foto 16.jpg",
 ]
-
 const imageDates: Record<string, string> = {
   "/fotos-nosotros/foto 1.jpg": "2025-06-10",
   "/fotos-nosotros/foto 2.jpg": "2025-06-10",
@@ -40,6 +40,7 @@ const imageDates: Record<string, string> = {
   "/fotos-nosotros/foto 13.jpg": "2025-09-26",
   "/fotos-nosotros/foto 14.jpg": "2025-09-27",
   "/fotos-nosotros/foto 15.jpg": "2025-09-15",
+  "/fotos-nosotros/foto 16.jpg": "2025-09-21",
 }
 
 function formatDateLong(dateStr: string) {
@@ -61,6 +62,16 @@ function formatDateLong(dateStr: string) {
 }
 
 export function ImageCarousel() {
+  // randomize order on each page load (memoized)
+  const shuffledImages = React.useMemo(() => {
+    const a = images.slice()
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[a[i], a[j]] = [a[j], a[i]]
+    }
+    return a
+  }, [])
+
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'center' }, [Autoplay({ delay: 3500, stopOnInteraction: true })])
   const [selectedIndex, setSelectedIndex] = React.useState(0)
 
@@ -94,7 +105,7 @@ export function ImageCarousel() {
         <div className="relative">
           <div className="overflow-hidden" ref={emblaRef}>
             <div className="flex transition-transform duration-700 ease-in-out">
-              {images.map((src, index) => (
+              {shuffledImages.map((src, index) => (
                   <div className="flex-grow-0 flex-shrink-0 w-full min-w-0" key={index}>
                     <div className="rounded-xl overflow-hidden shadow-lg border-2 border-white bg-pink-50 flex items-center justify-center relative">
                       <img src={src} alt={`Foto ${index + 1}`} className="max-w-full max-h-[60vh] object-contain" />
