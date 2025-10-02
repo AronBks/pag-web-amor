@@ -4,7 +4,7 @@ import * as React from "react"
 import useEmblaCarousel from "embla-carousel-react"
 import Autoplay from "embla-carousel-autoplay"
 import { Card, CardContent } from "@/components/ui/card"
-import { Heart } from "lucide-react"
+import { Heart, ChevronLeft, ChevronRight } from "lucide-react"
 
 const images = [
   "/fotos-nosotros/foto 1.jpg",
@@ -61,39 +61,67 @@ function formatDateLong(dateStr: string) {
 }
 
 export function ImageCarousel() {
-  const [emblaRef] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 3000 })])
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'center' }, [Autoplay({ delay: 3500, stopOnInteraction: true })])
+  const [selectedIndex, setSelectedIndex] = React.useState(0)
+
+  React.useEffect(() => {
+    if (!emblaApi) return
+    const onSelect = () => setSelectedIndex(emblaApi.selectedScrollSnap())
+    emblaApi.on('select', onSelect)
+    onSelect()
+    return () => {
+      if (emblaApi) emblaApi.off('select', onSelect)
+    }
+  }, [emblaApi])
+
+  const scrollPrev = React.useCallback(() => {
+    if (!emblaApi) return
+    if (emblaApi.canScrollPrev()) emblaApi.scrollPrev()
+  }, [emblaApi])
+  const scrollNext = React.useCallback(() => {
+    if (!emblaApi) return
+    if (emblaApi.canScrollNext()) emblaApi.scrollNext()
+  }, [emblaApi])
 
   return (
     <Card className="bg-white/90 backdrop-blur-sm border-pink-200 shadow-xl overflow-hidden">
       <CardContent className="p-6">
         <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold text-pink-700 mb-2">Nuestros Momentos Especiales 📸</h2>
+          <h2 className="text-2xl font-semibold text-pink-700 mb-2">Nuestros Momentos Especiales 📸</h2>
           <p className="text-gray-600">Una colección de nuestros recuerdos más bonitos.</p>
         </div>
-        <div className="overflow-hidden" ref={emblaRef}>
-          <div className="flex">
-            {images.map((src, index) => (
-              <div className="flex-grow-0 flex-shrink-0 w-full min-w-0 pl-4" key={index}>
-                <div className="aspect-[4/3] rounded-xl overflow-hidden shadow-lg border-2 border-white bg-pink-50 flex items-center justify-center relative">
-                  <img src={src} alt={`Foto ${index + 1}`} className="w-full h-full object-contain" />
-                  {imageDates[src] && (
-                    <div className="absolute left-4 top-4 bg-gradient-to-r from-pink-400 to-purple-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-lg flex items-center gap-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M7 10h5v5H7z" opacity=".9" />
-                        <path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v13a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zM5 9h14v10H5z"/>
-                      </svg>
-                      <span className="text-[11px] leading-none">{formatDateLong(imageDates[src])}</span>
-                    </div>
-                  )}
+
+        <div className="relative">
+          <div className="overflow-hidden" ref={emblaRef}>
+            <div className="flex transition-transform duration-700 ease-in-out">
+              {images.map((src, index) => (
+                  <div className="flex-grow-0 flex-shrink-0 w-full min-w-0" key={index}>
+                    <div className="rounded-xl overflow-hidden shadow-lg border-2 border-white bg-pink-50 flex items-center justify-center relative">
+                      <img src={src} alt={`Foto ${index + 1}`} className="max-w-full max-h-[60vh] object-contain" />
+                    {imageDates[src] && (
+                      <div className="absolute left-4 top-4 bg-gradient-to-r from-pink-400 to-purple-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-lg flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M7 10h5v5H7z" opacity=".9" />
+                          <path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v13a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zM5 9h14v10H5z"/>
+                        </svg>
+                        <span className="text-[11px] leading-none">{formatDateLong(imageDates[src])}</span>
+                      </div>
+                    )}
+                    {/* no overlay; image is centered and fully visible */}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
+
+
+          {/* swipe-only carousel: indicators removed to keep it minimal and touch-first */}
         </div>
+
         <div className="text-center mt-4 text-sm text-pink-500 flex items-center justify-center gap-2">
-            <Heart size={16} className="animate-pulse" />
-            <span>Desliza para ver más momentos</span>
-            <Heart size={16} className="animate-pulse" />
+          <Heart size={16} className="animate-pulse" />
+          <span>Desliza para ver más momentos</span>
+          <Heart size={16} className="animate-pulse" />
         </div>
       </CardContent>
     </Card>

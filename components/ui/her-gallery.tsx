@@ -719,11 +719,17 @@ export function HerGallery({ onBack }: HerGalleryProps) {
 
           return (
             <div key={index} className="break-inside-avoid">
-              <img
-                src={src}
-                alt={`Foto de mi novia ${index + 1}`}
-                className="w-full h-auto rounded-xl shadow-lg object-cover transform transition-all duration-300 hover:scale-105 hover:shadow-2xl"
-              />
+              <div className="relative overflow-hidden rounded-xl">
+                <img
+                  src={src}
+                  alt={`Foto de mi novia ${index + 1}`}
+                  className="w-full h-auto rounded-xl shadow-lg object-cover transform transition-all duration-500 hover:scale-105 hover:shadow-2xl"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 hover:opacity-70 transition-opacity duration-500"></div>
+                <div className="absolute left-4 bottom-4 text-white opacity-0 hover:opacity-100 transition-opacity duration-500 text-sm font-semibold">
+                  Ver recuerdo
+                </div>
+              </div>
             </div>
           );
         })}

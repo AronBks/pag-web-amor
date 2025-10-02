@@ -188,52 +188,61 @@ export default function Component() {
 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-4">
-                    <div className="flex items-start gap-4 p-4 bg-white/70 rounded-xl border border-pink-200 shadow-sm">
-                      <div className="w-12 h-12 bg-gradient-to-r from-pink-400 to-pink-500 rounded-full flex items-center justify-center flex-shrink-0">
-                        <Heart className="text-white" size={20} />
+                      <div className="p-4 bg-gradient-to-r from-pink-50 to-pink-25 rounded-xl border border-pink-200 shadow-md shadow-romantic transform transition-all hover:-translate-y-1">
+                        <div className="flex items-start gap-4">
+                          <div className="w-14 h-14 bg-gradient-to-r from-pink-400 to-pink-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
+                            <Heart className="text-white" size={20} />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-pink-700 mb-1 text-lg">Cada día descubro algo nuevo que amo de ti</h4>
+                            <p className="text-gray-700 text-sm">
+                              Tu mirada, tu risa y esos pequeños gestos que hacen que cada momento contigo sea único. 
+                              Gracias por regalarme algo nuevo que admirar cada día.
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-bold text-pink-700 mb-1">Descubro algo nuevo que amar de ti cada día</h4>
-                        <p className="text-gray-600 text-sm">
-                          Tu forma de ser, tu risa, todo en ti hace que me enamore más y más.
-                        </p>
+
+                      <div className="p-4 bg-gradient-to-r from-purple-50 to-purple-25 rounded-xl border border-purple-200 shadow-md shadow-romantic transform transition-all hover:-translate-y-1">
+                        <div className="flex items-start gap-4">
+                          <div className="w-14 h-14 bg-gradient-to-r from-purple-400 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
+                            <Sparkles className="text-white" size={20} />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-purple-700 mb-1 text-lg">Tu sonrisa lo cura todo</h4>
+                            <p className="text-gray-700 text-sm">
+                              En los días grises tu sonrisa es mi luz; tiene la magia de transformar cualquier preocupación en calma.
+                            </p>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-4 p-4 bg-white/70 rounded-xl border border-purple-200 shadow-sm">
-                      <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
-                        <Sparkles className="text-white" size={20} />
+                    <div className="space-y-4">
+                      <div className="p-4 bg-gradient-to-r from-blue-50 to-blue-25 rounded-xl border border-blue-200 shadow-md shadow-romantic transform transition-all hover:-translate-y-1">
+                        <div className="flex items-start gap-4">
+                          <div className="w-14 h-14 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
+                            <Star className="text-white" size={20} />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-blue-700 mb-1 text-lg">Contigo, todo tiene sentido</h4>
+                            <p className="text-gray-700 text-sm">Tu compañía me da fuerza y me recuerda que juntos podemos con lo que venga.</p>
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-bold text-purple-700 mb-1">Tu sonrisa ilumina mis días</h4>
-                        <p className="text-gray-600 text-sm">
-                          No importa cómo haya sido mi día, verte feliz lo arregla todo.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
 
-                  <div className="space-y-4">
-                    <div className="flex items-start gap-4 p-4 bg-white/70 rounded-xl border border-blue-200 shadow-sm">
-                      <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                        <Star className="text-white" size={20} />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-blue-700 mb-1">Contigo a mi lado, todo es posible</h4>
-                        <p className="text-gray-600 text-sm">Me das la fuerza y la confianza para enfrentar cualquier cosa.</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-4 p-4 bg-white/70 rounded-xl border border-green-200 shadow-sm">
-                      <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                        <Heart className="text-white" size={20} />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-green-700 mb-1">Eres mi refugio y mi mayor inspiración</h4>
-                        <p className="text-gray-600 text-sm">Gracias por ser mi lugar seguro y por motivarme a ser mejor.</p>
+                      <div className="p-4 bg-gradient-to-r from-green-50 to-green-25 rounded-xl border border-green-200 shadow-md shadow-romantic transform transition-all hover:-translate-y-1">
+                        <div className="flex items-start gap-4">
+                          <div className="w-14 h-14 bg-gradient-to-r from-green-400 to-green-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
+                            <Heart className="text-white" size={20} />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-green-700 mb-1 text-lg">Eres mi refugio y mi inspiración</h4>
+                            <p className="text-gray-700 text-sm">Gracias por tu ternura y por enseñarme a ser mejor cada día.</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
                 </div>
               </CardContent>
             </Card>
