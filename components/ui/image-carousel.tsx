@@ -110,7 +110,15 @@ export function ImageCarousel() {
               {shuffledImages.map((src, index) => (
                   <div className="flex-grow-0 flex-shrink-0 w-full min-w-0" key={index}>
                     <div className="rounded-xl overflow-hidden shadow-lg border-2 border-white bg-pink-50 flex items-center justify-center relative">
-                      <img src={encodeURI(src)} alt={`Foto ${index + 1}`} className="max-w-full max-h-[60vh] object-contain" />
+                      <img 
+                        src={src} 
+                        alt={`Foto ${index + 1}`} 
+                        className="max-w-full max-h-[60vh] object-contain"
+                        onError={(e) => {
+                          console.error(`Error loading image: ${src}`)
+                          e.currentTarget.style.display = 'none'
+                        }}
+                      />
                     {imageDates[src] && (
                       <div className="absolute left-4 top-4 bg-gradient-to-r from-pink-400 to-purple-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-lg flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
@@ -128,12 +136,44 @@ export function ImageCarousel() {
           </div>
 
 
+          {/* Navigation buttons */}
+          <button
+            onClick={scrollPrev}
+            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white/90 rounded-full p-2 shadow-lg z-10 transition-all duration-200"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button
+            onClick={scrollNext}
+            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white/90 rounded-full p-2 shadow-lg z-10 transition-all duration-200"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+
+          {/* Indicators */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+            {shuffledImages.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => emblaApi?.scrollTo(index)}
+                className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                  index === selectedIndex ? 'bg-pink-500 w-6' : 'bg-white/60 hover:bg-white/80'
+                }`}
+              />
+            ))}
+          </div>
+
+
           {/* swipe-only carousel: indicators removed to keep it minimal and touch-first */}
         </div>
 
         <div className="text-center mt-4 text-sm text-pink-500 flex items-center justify-center gap-2">
           <Heart size={16} className="animate-pulse" />
-          <span>Desliza para ver más momentos</span>
+          <span>Desliza o usa las flechas para ver más momentos</span>
           <Heart size={16} className="animate-pulse" />
         </div>
       </CardContent>
