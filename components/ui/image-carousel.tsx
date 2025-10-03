@@ -42,7 +42,7 @@ const imageDates: Record<string, string> = {
   "/fotos-nosotros/foto 14.jpg": "2025-09-27",
   "/fotos-nosotros/foto 15.jpg": "2025-09-15",
   "/fotos-nosotros/foto 16.jpg": "2025-09-21",
-  "/fotos-nosotros/foto 17.jpg": "",
+  "/fotos-nosotros/foto 17.jpg": "2025-10-01",
 }
 
 function formatDateLong(dateStr: string) {
@@ -110,7 +110,7 @@ export function ImageCarousel() {
               {shuffledImages.map((src, index) => (
                   <div className="flex-grow-0 flex-shrink-0 w-full min-w-0" key={index}>
                     <div className="rounded-xl overflow-hidden shadow-lg border-2 border-white bg-pink-50 flex items-center justify-center relative">
-                      <img src={src} alt={`Foto ${index + 1}`} className="max-w-full max-h-[60vh] object-contain" />
+                      <img src={encodeURI(src)} alt={`Foto ${index + 1}`} className="max-w-full max-h-[60vh] object-contain" />
                     {imageDates[src] && (
                       <div className="absolute left-4 top-4 bg-gradient-to-r from-pink-400 to-purple-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-lg flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
