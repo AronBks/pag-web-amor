@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import './globals.css'
+import { HelloKittyBackground } from '@/components/ui/hello-kitty-background'
 
 export const metadata: Metadata = {
   title: 'Para mi Kitty - Un lugar especial',
@@ -16,7 +17,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet" />
       </head>
-      <body>{children}</body>
+      <body>
+        <HelloKittyBackground />
+        {children}
+      </body>
     </html>
   )
 }

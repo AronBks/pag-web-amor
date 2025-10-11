@@ -30,6 +30,7 @@ const herPhotos = [
   "/fotos-nosotros/ella23.jpg",
   "/fotos-nosotros/ella24.png",
   "/fotos-nosotros/ella25.png",
+  "/fotos-nosotros/ella26.jpg",
 ];
 
 // map each photo to an ISO-ish date string we can format. Keep simple strings here.
@@ -59,6 +60,7 @@ const herPhotoDates: Record<string, string> = {
   "/fotos-nosotros/ella23.jpg": "",
   "/fotos-nosotros/ella24.png": "",
   "/fotos-nosotros/ella25.png": "",
+  "/fotos-nosotros/ella26.jpg": "",
 }
 
 function formatDateLong(dateStr: string) {
@@ -86,19 +88,19 @@ interface HerGalleryProps {
 
 export function HerGallery({ onBack }: HerGalleryProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative z-20">
       <div className="text-center">
         <Button
           onClick={onBack}
           variant="outline"
-          className="mb-6 border-pink-300 text-pink-600"
+          className="mb-6 border-pink-400 text-pink-700 bg-white/95 backdrop-blur-md hover:bg-pink-50"
         >
           ← Volver
         </Button>
         <h2 className="text-3xl font-bold bg-gradient-to-r from-pink-700 to-blue-700 bg-clip-text text-transparent mb-4">
-          Mi Persona Favorita
+          Mi Persona Favorita 🐱💕
         </h2>
-        <p className="text-gray-600">Una pequeña galería para la chica más increíble del mundo.</p>
+        <p className="text-pink-700 font-medium">Una pequeña galería para la chica más increíble del mundo 🌸</p>
       </div>
 
       <div className="columns-2 md:columns-3 gap-4 space-y-4">
@@ -106,7 +108,7 @@ export function HerGallery({ onBack }: HerGalleryProps) {
           if (src.includes("ella1.jpg")) {
             return (
               <div key={index} className="break-inside-avoid">
-                <Card className="bg-pink-50 border-pink-200">
+                <Card className="bg-pink-50/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                   <CardContent className="p-4">
                     <div className="relative">
                       <img
@@ -140,7 +142,7 @@ export function HerGallery({ onBack }: HerGalleryProps) {
           if (src.includes("ella6.jpg")) {
             return (
               <div key={index} className="break-inside-avoid">
-                <Card className="bg-pink-50 border-pink-200">
+                <Card className="bg-pink-50/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                   <CardContent className="p-4">
                     <img
                       src={src}
@@ -163,7 +165,7 @@ export function HerGallery({ onBack }: HerGalleryProps) {
           if (src.includes("ella11.jpg")) {
             return (
               <div key={index} className="break-inside-avoid">
-                <Card className="bg-pink-50 border-pink-200">
+                <Card className="bg-pink-50/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                   <CardContent className="p-4">
                     <img
                       src={src}
@@ -186,7 +188,7 @@ export function HerGallery({ onBack }: HerGalleryProps) {
           if (src.includes("ella2.jpg")) {
             return (
               <div key={index} className="break-inside-avoid">
-                <Card className="bg-pink-50 border-pink-200">
+                <Card className="bg-pink-50/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                   <CardContent className="p-4">
                     <img
                       src={src}
@@ -209,7 +211,7 @@ export function HerGallery({ onBack }: HerGalleryProps) {
           if (src.includes("ella7.jpg")) {
             return (
               <div key={index} className="break-inside-avoid">
-                <Card className="bg-pink-50 border-pink-200">
+                <Card className="bg-pink-50/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                   <CardContent className="p-4">
                     <img
                       src={src}
@@ -232,7 +234,7 @@ export function HerGallery({ onBack }: HerGalleryProps) {
           if (src.includes("ella12.jpg")) {
             return (
               <div key={index} className="break-inside-avoid">
-                <Card className="bg-pink-50 border-pink-200">
+                <Card className="bg-pink-50/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                   <CardContent className="p-4">
                     <img
                       src={src}
@@ -255,7 +257,7 @@ export function HerGallery({ onBack }: HerGalleryProps) {
           if (src.includes("ella3.jpg")) {
             return (
               <div key={index} className="break-inside-avoid">
-                <Card className="bg-pink-50 border-pink-200">
+                <Card className="bg-pink-50/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                   <CardContent className="p-4">
                     <img
                       src={src}
@@ -278,7 +280,7 @@ export function HerGallery({ onBack }: HerGalleryProps) {
           if (src.includes("ella8.jpg")) {
             return (
               <div key={index} className="break-inside-avoid">
-                <Card className="bg-pink-50 border-pink-200">
+                <Card className="bg-pink-50/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                   <CardContent className="p-4">
                     <img
                       src={src}
@@ -301,7 +303,7 @@ export function HerGallery({ onBack }: HerGalleryProps) {
           if (src.includes("ella13.jpg")) {
             return (
               <div key={index} className="break-inside-avoid">
-                <Card className="bg-pink-50 border-pink-200">
+                <Card className="bg-pink-50/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                   <CardContent className="p-4">
                     <img
                       src={src}
@@ -321,10 +323,34 @@ export function HerGallery({ onBack }: HerGalleryProps) {
               </div>
             );
           }
+
+          if (src.includes("ella26.jpg")) {
+            return (
+              <div key={index} className="break-inside-avoid">
+                <Card className="bg-pink-50/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
+                  <CardContent className="p-4">
+                    <img
+                      src={src}
+                      alt="Foto especial de mi novia"
+                      className="w-full h-auto rounded-lg shadow-md mb-4"
+                    />
+                    <div className="text-center">
+                      <p className="text-sm text-pink-700 font-semibold">
+                        Hay momentos en los que tu calma transforma el ruido en paz  en esta foto veo esa serenidad que solo tú sabes dar.
+                      </p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Gracias por enseñarme que la belleza también es tranquilidad.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            );
+          }
           if (src.includes("ella4.jpg")) {
             return (
               <div key={index} className="break-inside-avoid">
-                <Card className="bg-pink-50 border-pink-200">
+                <Card className="bg-pink-50/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                   <CardContent className="p-4">
                     <img
                       src={src}
@@ -347,7 +373,7 @@ export function HerGallery({ onBack }: HerGalleryProps) {
           if (src.includes("ella14.jpg")) {
             return (
               <div key={index} className="break-inside-avoid">
-                <Card className="bg-pink-50 border-pink-200">
+                <Card className="bg-pink-50/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                   <CardContent className="p-4">
                     <img
                       src={src}
@@ -370,7 +396,7 @@ export function HerGallery({ onBack }: HerGalleryProps) {
           if (src.includes("ella10.jpg")) {
             return (
               <div key={index} className="break-inside-avoid">
-                <Card className="bg-pink-50 border-pink-200">
+                <Card className="bg-pink-50/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                   <CardContent className="p-4">
                     <img
                       src={src}
@@ -393,7 +419,7 @@ export function HerGallery({ onBack }: HerGalleryProps) {
           if (src.includes("ella9.jpg")) {
             return (
               <div key={index} className="break-inside-avoid">
-                <Card className="bg-pink-50 border-pink-200">
+                <Card className="bg-pink-50/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                   <CardContent className="p-4">
                     <img
                       src={src}
@@ -416,7 +442,7 @@ export function HerGallery({ onBack }: HerGalleryProps) {
           if (src.includes("ella5.jpg")) {
             return (
               <div key={index} className="break-inside-avoid">
-                <Card className="bg-pink-50 border-pink-200">
+                <Card className="bg-pink-50/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                   <CardContent className="p-4">
                     <img
                       src={src}
@@ -439,7 +465,7 @@ export function HerGallery({ onBack }: HerGalleryProps) {
           if (src.includes("ella15.jpg")) {
             return (
               <div key={index} className="break-inside-avoid">
-                <Card className="bg-pink-50 border-pink-200">
+                <Card className="bg-pink-50/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                   <CardContent className="p-4">
                     <img
                       src={src}
@@ -462,7 +488,7 @@ export function HerGallery({ onBack }: HerGalleryProps) {
           if (src.includes("ella16.jpg")) {
             return (
               <div key={index} className="break-inside-avoid">
-                <Card className="bg-pink-50 border-pink-200">
+                <Card className="bg-pink-50/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                   <CardContent className="p-4">
                     <img
                       src={src}
@@ -485,7 +511,7 @@ export function HerGallery({ onBack }: HerGalleryProps) {
           if (src.includes("ella17.jpg")) {
             return (
               <div key={index} className="break-inside-avoid">
-                <Card className="bg-pink-50 border-pink-200">
+                <Card className="bg-pink-50/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                   <CardContent className="p-4">
                     <img
                       src={src}
@@ -508,7 +534,7 @@ export function HerGallery({ onBack }: HerGalleryProps) {
           if (src.includes("ella18.jpg")) {
             return (
               <div key={index} className="break-inside-avoid">
-                <Card className="bg-pink-50 border-pink-200">
+                <Card className="bg-pink-50/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                   <CardContent className="p-4">
                     <img
                       src={src}
@@ -531,7 +557,7 @@ export function HerGallery({ onBack }: HerGalleryProps) {
           if (src.includes("ella19.jpg")) {
             return (
               <div key={index} className="break-inside-avoid">
-                <Card className="bg-pink-50 border-pink-200">
+                <Card className="bg-pink-50/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                   <CardContent className="p-4">
                     <img
                       src={src}
@@ -554,7 +580,7 @@ export function HerGallery({ onBack }: HerGalleryProps) {
           if (src.includes("ella20.jpg")) {
             return (
               <div key={index} className="break-inside-avoid">
-                <Card className="bg-pink-50 border-pink-200">
+                <Card className="bg-pink-50/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                   <CardContent className="p-4">
                     <img
                       src={src}
@@ -577,7 +603,7 @@ export function HerGallery({ onBack }: HerGalleryProps) {
           if (src.includes("ella21.jpg")) {
             return (
               <div key={index} className="break-inside-avoid">
-                <Card className="bg-pink-50 border-pink-200">
+                <Card className="bg-pink-50/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                   <CardContent className="p-4">
                     <img
                       src={src}
@@ -600,7 +626,7 @@ export function HerGallery({ onBack }: HerGalleryProps) {
           if (src.includes("ella22.jpg")) {
             return (
               <div key={index} className="break-inside-avoid">
-                <Card className="bg-pink-50 border-pink-200">
+                <Card className="bg-pink-50/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                   <CardContent className="p-4">
                     <img
                       src={src}
@@ -623,7 +649,7 @@ export function HerGallery({ onBack }: HerGalleryProps) {
           if (src.includes("ella23.jpg")) {
             return (
               <div key={index} className="break-inside-avoid">
-                <Card className="bg-pink-50 border-pink-200">
+                <Card className="bg-pink-50/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                   <CardContent className="p-4">
                     <img
                       src={src}
@@ -646,7 +672,7 @@ export function HerGallery({ onBack }: HerGalleryProps) {
           if (src.includes("ella24.png")) {
             return (
               <div key={index} className="break-inside-avoid">
-                <Card className="bg-pink-50 border-pink-200">
+                <Card className="bg-pink-50/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                   <CardContent className="p-4">
                     <img
                       src={src}
@@ -669,7 +695,7 @@ export function HerGallery({ onBack }: HerGalleryProps) {
               if (src.includes("ella25.png")) {
                 return (
                   <div key={index} className="break-inside-avoid">
-                    <Card className="bg-pink-50 border-pink-200">
+                    <Card className="bg-pink-50/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                       <CardContent className="p-4">
                         <img
                           src={src}
@@ -693,7 +719,7 @@ export function HerGallery({ onBack }: HerGalleryProps) {
             // New photos (ella16..ella23): show placeholder card with optional date
             return (
               <div key={index} className="break-inside-avoid">
-                <Card className="bg-pink-50 border-pink-200">
+                <Card className="bg-pink-50/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                   <CardContent className="p-4">
                     <div className="relative">
                       <img src={src} alt={`Foto nueva ${index + 1}`} className="w-full h-auto rounded-lg shadow-md mb-4" />

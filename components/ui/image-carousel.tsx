@@ -24,6 +24,7 @@ const images = [
   "/fotos-nosotros/foto 15.jpg",
   "/fotos-nosotros/foto 16.jpg",
   "/fotos-nosotros/foto 17.jpg",
+  "/fotos-nosotros/foto 18.jpg",
 ]
 const imageDates: Record<string, string> = {
   "/fotos-nosotros/foto 1.jpg": "2025-06-10",
@@ -43,6 +44,7 @@ const imageDates: Record<string, string> = {
   "/fotos-nosotros/foto 15.jpg": "2025-09-15",
   "/fotos-nosotros/foto 16.jpg": "2025-09-21",
   "/fotos-nosotros/foto 17.jpg": "2025-10-01",
+  "/fotos-nosotros/foto 18.jpg": "2025-10-10",
 }
 
 function formatDateLong(dateStr: string) {

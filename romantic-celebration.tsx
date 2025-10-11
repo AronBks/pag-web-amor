@@ -69,35 +69,8 @@ export default function Component() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-blue-100 p-4">
-      {/* Floating Elements Animation */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        {[...Array(8)].map((_, i) => (
-          <Heart
-            key={`heart-${i}`}
-            className={`absolute text-pink-300 animate-bounce opacity-60`}
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${i * 0.7}s`,
-              animationDuration: `${2 + Math.random() * 2}s`,
-            }}
-            size={12 + Math.random() * 20}
-          />
-        ))}
-        {[...Array(6)].map((_, i) => (
-          <Star
-            key={`star-${i}`}
-            className={`absolute text-yellow-300 animate-pulse opacity-50`}
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${i * 1.2}s`,
-            }}
-            size={8 + Math.random() * 12}
-          />
-        ))}
-      </div>
+    <div className="min-h-screen relative z-10 p-4">
+      {/* Remove old floating elements since we have Hello Kitty background now */}
 
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Header */}
@@ -124,7 +97,7 @@ export default function Component() {
             <ImageCarousel />
 
             {/* Main Card */}
-            <Card className="bg-white/80 backdrop-blur-sm border-pink-200 shadow-xl">
+            <Card className="bg-white/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 relative z-20">
               <CardContent className="p-8 text-center space-y-6">
                 <div className="flex justify-center mb-6">
                   <Sparkles className="text-pink-400 animate-spin" size={48} />
@@ -177,7 +150,7 @@ export default function Component() {
             </Card>
 
             {/* Enhanced Promises */}
-            <Card className="bg-gradient-to-r from-pink-100 to-purple-100 border-pink-200 shadow-xl">
+            <Card className="bg-gradient-to-r from-pink-100/95 to-purple-100/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 relative z-20">
               <CardContent className="p-8">
                 <div className="text-center mb-8">
                   <h3 className="text-2xl font-bold text-pink-700 mb-2">Cosas que amo de estar contigo</h3>
