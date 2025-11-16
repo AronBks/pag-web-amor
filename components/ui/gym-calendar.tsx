@@ -16,12 +16,23 @@ import {
   CheckCircle2,
   Circle,
   Dumbbell,
+  NotebookPen,
   Flame,
   Sparkles,
   Trash2,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useRemoteCalendar, type RemoteCalendarEvent } from "@/hooks/use-remote-calendar"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog"
 
 const getIsoDate = (date: Date) => format(date, "yyyy-MM-dd")
 
@@ -42,37 +53,80 @@ const formatShortDate = (date: Date) =>
     month: "short",
   }).format(date)
 
+const formatFullDateTime = (date: Date) => {
+  const datePart = new Intl.DateTimeFormat("es-ES", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(date)
+  const timePart = new Intl.DateTimeFormat("es-ES", {
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date)
+  return `${datePart} a las ${timePart}`
+}
+
+const sortByCreatedDesc = (items: RemoteCalendarEvent[]) =>
+  [...items].sort(
+    (eventA, eventB) => parseISO(eventB.created_at).getTime() - parseISO(eventA.created_at).getTime()
+  )
+
+type PendingDeletion =
+  | { type: "session"; item: RemoteCalendarEvent }
+  | { type: "note"; item: RemoteCalendarEvent }
+
 export function GymCalendar({ onBack }: { onBack: () => void }) {
-  const { events, isLoading, addEvent, updateEventStatus, deleteEvent } = useRemoteCalendar("gym")
+  const {
+    events: sessionEvents,
+    isLoading: sessionsLoading,
+    addEvent: addSession,
+    updateEventStatus,
+    deleteEvent: deleteSession,
+  } = useRemoteCalendar("gym")
+  const {
+    events: noteEvents,
+    isLoading: notesLoading,
+    addEvent: addNote,
+    deleteEvent: deleteNote,
+  } = useRemoteCalendar("gym-notes")
   const [selectedDate, setSelectedDate] = useState<Date>(() => new Date())
   const [title, setTitle] = useState("")
   const [notes, setNotes] = useState("")
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [pendingDelete, setPendingDelete] = useState<PendingDeletion | null>(null)
+  const [noteTitle, setNoteTitle] = useState("")
+  const [noteDetails, setNoteDetails] = useState("")
+  const [noteError, setNoteError] = useState<string | null>(null)
+
+  const isLoading = sessionsLoading || notesLoading
 
   const selectedDayKey = useMemo(() => getIsoDate(selectedDate), [selectedDate])
 
   const sessionsForSelectedDay = useMemo(() => {
-    return events.filter((session) => session.date === selectedDayKey)
-  }, [events, selectedDayKey])
+    return sessionEvents.filter((session) => session.date === selectedDayKey)
+  }, [sessionEvents, selectedDayKey])
 
   const upcomingSessions = useMemo(() => {
     const today = startOfDay(new Date()).getTime()
-    return events
+    return sessionEvents
       .filter((session) => parseISO(session.date).getTime() >= today)
       .slice(0, 6)
-  }, [events])
+  }, [sessionEvents])
 
   const daysWithSessions = useMemo(() => {
     const unique = new Map<string, Date>()
-    events.forEach((session) => {
+    sessionEvents.forEach((session) => {
       if (!unique.has(session.date)) {
         unique.set(session.date, parseISO(session.date))
       }
     })
     return Array.from(unique.values())
-  }, [events])
+  }, [sessionEvents])
 
-  const completedSessions = useMemo(() => events.filter((session) => session.done).length, [events])
+  const completedSessions = useMemo(
+    () => sessionEvents.filter((session) => session.done).length,
+    [sessionEvents]
+  )
 
   const nextSession = upcomingSessions[0]
 
@@ -80,7 +134,7 @@ export function GymCalendar({ onBack }: { onBack: () => void }) {
     event.preventDefault()
     if (!title.trim()) return
 
-    const result = await addEvent({
+    const result = await addSession({
       date: selectedDayKey,
       title: title.trim(),
       notes: notes.trim(),
@@ -105,20 +159,66 @@ export function GymCalendar({ onBack }: { onBack: () => void }) {
     }
   }
 
-  const handleDelete = async (id: string) => {
-    const result = await deleteEvent(id)
+  const handleSessionDelete = async (id: string) => {
+    const result = await deleteSession(id)
     if (!result.success) {
       setErrorMessage(result.message ?? "No se pudo eliminar el entrenamiento. Intenta de nuevo.")
     } else {
       setErrorMessage(null)
     }
+    return result
+  }
+
+  const handleNoteDelete = async (id: string) => {
+    const result = await deleteNote(id)
+    if (!result.success) {
+      setNoteError(result.message ?? "No se pudo eliminar la nota. Intenta de nuevo.")
+    } else {
+      setNoteError(null)
+    }
+    return result
+  }
+
+  const confirmDelete = async () => {
+    if (!pendingDelete) return
+
+    if (pendingDelete.type === "session") {
+      await handleSessionDelete(pendingDelete.item.id)
+    } else {
+      await handleNoteDelete(pendingDelete.item.id)
+    }
+
+    setPendingDelete(null)
+  }
+
+  const handleAddNote = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (!noteTitle.trim() && !noteDetails.trim()) {
+      setNoteError("Escribe al menos un título o algunas notas para guardar.")
+      return
+    }
+
+    const result = await addNote({
+      date: selectedDayKey,
+      title: noteTitle.trim() || "Nota sin título",
+      notes: noteDetails.trim(),
+    })
+
+    if (!result.success) {
+      setNoteError(result.message ?? "No se pudo guardar la nota. Intenta de nuevo.")
+      return
+    }
+
+    setNoteTitle("")
+    setNoteDetails("")
+    setNoteError(null)
   }
 
   const renderDay = ({ date }: DayContentProps) => {
     const dayNumber = format(date, "d")
     const iso = getIsoDate(date)
     const isSelected = iso === selectedDayKey
-    const hasSession = events.some((session: RemoteCalendarEvent) => session.date === iso)
+    const hasSession = sessionEvents.some((session: RemoteCalendarEvent) => session.date === iso)
 
     return (
       <span className="relative flex h-9 w-9 items-center justify-center font-semibold">
@@ -137,6 +237,13 @@ export function GymCalendar({ onBack }: { onBack: () => void }) {
   }
 
   const selectedDayCount = sessionsForSelectedDay.length
+  const notesForSelectedDay = useMemo(() => {
+    return noteEvents.filter((note) => note.date === selectedDayKey)
+  }, [noteEvents, selectedDayKey])
+
+  const recentNotes = useMemo(() => {
+    return sortByCreatedDesc(noteEvents).slice(0, 5)
+  }, [noteEvents])
 
   if (isLoading) {
     return (
@@ -148,7 +255,45 @@ export function GymCalendar({ onBack }: { onBack: () => void }) {
   }
 
   return (
-    <div className="space-y-6">
+    <>
+      <AlertDialog
+        open={Boolean(pendingDelete)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setPendingDelete(null)
+          }
+        }}
+      >
+        <AlertDialogContent className="bg-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {pendingDelete?.type === "note"
+                ? "¿Eliminar esta nota compartida?"
+                : "¿Eliminar este entrenamiento?"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {pendingDelete?.item
+                ? `Se eliminará "${pendingDelete.item.title}" del ${formatLongDate(
+                    parseISO(pendingDelete.item.date)
+                  )}.`
+                : "Se eliminará el elemento seleccionado."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setPendingDelete(null)}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-gradient-to-r from-rose-400 via-pink-400 to-fuchsia-400 text-white hover:from-rose-500 hover:via-pink-500 hover:to-fuchsia-500"
+              onClick={async () => {
+                await confirmDelete()
+              }}
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <div className="space-y-6">
       <BackButton onClick={onBack} label="← Volver" />
 
       {errorMessage && (
@@ -296,7 +441,7 @@ export function GymCalendar({ onBack }: { onBack: () => void }) {
                         variant="ghost"
                         size="icon"
                         className="text-gray-400 hover:text-red-500"
-                        onClick={() => handleDelete(session.id)}
+                        onClick={() => setPendingDelete({ type: "session", item: session })}
                         aria-label="Eliminar entrenamiento"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -321,7 +466,7 @@ export function GymCalendar({ onBack }: { onBack: () => void }) {
           <CardContent className="grid grid-cols-1 gap-4 py-6 sm:grid-cols-3">
             <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-center">
               <p className="text-xs uppercase tracking-wide text-rose-600">Total sesiones</p>
-              <p className="text-2xl font-bold text-pink-700">{events.length}</p>
+              <p className="text-2xl font-bold text-pink-700">{sessionEvents.length}</p>
             </div>
             <div className="rounded-xl border border-pink-200 bg-pink-50 p-4 text-center">
               <p className="text-xs uppercase tracking-wide text-pink-600">Completadas</p>
@@ -373,7 +518,7 @@ export function GymCalendar({ onBack }: { onBack: () => void }) {
                   variant="ghost"
                   size="icon"
                   className="text-gray-400 hover:text-red-500"
-                  onClick={() => handleDelete(session.id)}
+                  onClick={() => setPendingDelete({ type: "session", item: session })}
                   aria-label="Eliminar entrenamiento"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -383,7 +528,131 @@ export function GymCalendar({ onBack }: { onBack: () => void }) {
           </CardContent>
         </Card>
       </div>
-    </div>
+
+      <Card className="border-pink-200 bg-white/90">
+        <CardHeader className="pb-0">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <CardTitle className="text-xl text-pink-700">Notas compartidas</CardTitle>
+              <CardDescription>
+                Un espacio para escribir cómo nos sentimos, qué comimos o cualquier detalle del entrenamiento.
+              </CardDescription>
+            </div>
+            <NotebookPen className="h-6 w-6 text-pink-500" />
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-6 pt-4">
+          {noteError && (
+            <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-600">
+              {noteError}
+            </div>
+          )}
+
+          <form className="space-y-4" onSubmit={handleAddNote}>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-pink-500">
+                Día seleccionado
+              </p>
+              <p className="text-base font-semibold text-pink-700">{formatLongDate(selectedDate)}</p>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-pink-600" htmlFor="note-title">
+                Título o resumen
+              </label>
+              <Input
+                id="note-title"
+                placeholder="Ej. Almuerzo saludable, Estuvimos motivados, Dolor muscular leve"
+                value={noteTitle}
+                onChange={(event: ChangeEvent<HTMLInputElement>) => setNoteTitle(event.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-pink-600" htmlFor="note-details">
+                Notas para recordar
+              </label>
+              <Textarea
+                id="note-details"
+                placeholder="Describe sensaciones, alimentación, estado de ánimo o cualquier detalle que quieras compartir."
+                value={noteDetails}
+                onChange={(event: ChangeEvent<HTMLTextAreaElement>) => setNoteDetails(event.target.value)}
+                rows={4}
+              />
+            </div>
+            <Button
+              type="submit"
+              className="w-full bg-gradient-to-r from-rose-400 via-pink-400 to-fuchsia-400 text-white hover:from-rose-500 hover:via-pink-500 hover:to-fuchsia-500"
+            >
+              Guardar nota
+            </Button>
+          </form>
+
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold text-pink-600">
+              Notas para {formatLongDate(selectedDate)}
+            </h3>
+            {notesForSelectedDay.length === 0 ? (
+              <p className="text-sm text-gray-600">
+                Aún no registraste notas para este día. Comparte cómo nos fue o qué queremos recordar.
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {notesForSelectedDay.map((note) => (
+                  <div
+                    key={note.id}
+                    className="flex items-start justify-between gap-3 rounded-2xl border border-rose-200 bg-gradient-to-r from-white via-rose-50 to-pink-50 p-4"
+                  >
+                    <div className="space-y-2">
+                      <p className="text-sm font-semibold text-pink-700">{note.title}</p>
+                      {note.notes && (
+                        <p className="text-sm text-gray-600 whitespace-pre-wrap">{note.notes}</p>
+                      )}
+                      <p className="text-xs text-gray-500">
+                        Registrado el {formatFullDateTime(parseISO(note.created_at))}
+                      </p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-gray-400 hover:text-red-500"
+                      onClick={() => setPendingDelete({ type: "note", item: note })}
+                      aria-label="Eliminar nota"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold text-pink-600">Historial reciente</h3>
+            {recentNotes.length === 0 ? (
+              <p className="text-sm text-gray-600">
+                Cuando agregues notas aparecerá aquí un resumen de las últimas actualizaciones.
+              </p>
+            ) : (
+              <ul className="space-y-2 text-sm text-gray-700">
+                {recentNotes.map((note) => (
+                  <li
+                    key={`recent-${note.id}`}
+                    className="flex items-start justify-between gap-3 rounded-xl border border-rose-100 bg-rose-50/70 px-3 py-2"
+                  >
+                    <div>
+                      <p className="font-medium text-pink-700">{note.title}</p>
+                      <p className="text-xs text-gray-500">
+                        {formatShortDate(parseISO(note.date))} · {formatFullDateTime(parseISO(note.created_at))}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+      </div>
+    </>
   )
 }
 
