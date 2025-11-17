@@ -15,6 +15,7 @@ import {
   Home,
   Gamepad2,
   Dumbbell,
+  Music4,
 } from "lucide-react"
 import { ImageCarousel } from "@/components/ui/image-carousel"
 import { HerGallery } from "@/components/ui/her-gallery"
@@ -22,6 +23,7 @@ import { SpecialMessage } from "@/components/ui/special-message"
 import BackButton from "@/components/ui/back-button"
 import LoveCalendar from "@/components/ui/love-calendar"
 import GymCalendar from "@/components/ui/gym-calendar"
+import MusicDedication from "@/components/ui/music-dedication"
 
 export default function Component() {
   const [currentSection, setCurrentSection] = useState("main")
@@ -135,7 +137,7 @@ export default function Component() {
                   </p>
                 </div>
 
-                <div className="grid gap-4 mt-8 items-stretch sm:grid-cols-2 lg:grid-cols-4">
+                <div className="grid gap-4 mt-8 items-stretch sm:grid-cols-2 lg:grid-cols-5">
                   <Button
                     onClick={() => setCurrentSection("plans")}
                     className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white p-6 h-auto flex flex-col gap-2 rounded-xl shadow-lg"
@@ -170,6 +172,15 @@ export default function Component() {
                     <Dumbbell size={32} />
                     <span className="font-semibold">Agenda Fitness</span>
                     <span className="text-sm opacity-90">Sigue tus entrenamientos juntos</span>
+                  </Button>
+
+                  <Button
+                    onClick={() => setCurrentSection("music")}
+                    className="bg-gradient-to-r from-rose-500 via-pink-500 to-purple-500 hover:from-rose-600 hover:via-pink-600 hover:to-purple-600 text-white p-6 h-auto flex flex-col gap-2 rounded-xl shadow-lg"
+                  >
+                    <Music4 size={32} />
+                    <span className="font-semibold">Música especial</span>
+                    <span className="text-sm opacity-90">Dedicatorias con canciones</span>
                   </Button>
                 </div>
 
@@ -340,6 +351,10 @@ export default function Component() {
 
         {currentSection === "gym-calendar" && (
           <GymCalendar onBack={() => setCurrentSection("main")} />
+        )}
+
+        {currentSection === "music" && (
+          <MusicDedication onBack={() => setCurrentSection("main")} />
         )}
         {/* Footer */}
         <div className="text-center py-8">

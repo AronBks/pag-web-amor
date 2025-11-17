@@ -17,7 +17,9 @@ Sigue estos pasos para que el calendario se guarde y se comparta entre todas las
 
 > **Importante:** nunca publiques el service role key en el navegador. En este proyecto solo se usa dentro de la carpeta `app/api`, así que no se envía al cliente.
 
-## 3. Crear la tabla `love_events`
+## 3. Crear las tablas necesarias
+
+### 3.1 Tabla `love_events`
 
 1. En el dashboard de Supabase, abre **SQL Editor**.
 2. Crea la tabla (o actualízala) ejecutando la siguiente sentencia:
@@ -50,6 +52,26 @@ update love_events
 ```
 
 3. Asegúrate de que **RLS (Row Level Security)** esté activado (Supabase lo activa por defecto). Como usaremos el service role key, no hace falta crear políticas adicionales por ahora.
+
+### 3.2 Tabla `love_songs`
+
+Esta tabla almacena las canciones dedicadas para la sección musical. Ejecuta este comando en el **SQL Editor**:
+
+```sql
+create table if not exists love_songs (
+   id uuid primary key default gen_random_uuid(),
+   date date not null unique,
+   title text not null,
+   url text not null,
+   message text,
+   created_at timestamptz not null default now()
+);
+
+create index if not exists love_songs_created_at_idx
+   on love_songs (created_at desc);
+```
+
+Si ya tenías canciones guardadas en `love_events` con la categoría `love-songs`, puedes mover los datos manualmente insertándolos en esta tabla y eliminándolos de la anterior.
 
 ## 4. Variables de entorno en local
 
