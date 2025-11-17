@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react"
 import { format, parseISO } from "date-fns"
-import { Music4, Sparkles, Trash2 } from "lucide-react"
+import { Heart, Music4, Quote, Sparkles, Trash2 } from "lucide-react"
 import BackButton from "@/components/ui/back-button"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -274,201 +274,221 @@ export function MusicDedication({ onBack }: { onBack: () => void }) {
           </div>
         )}
 
-        <Card className="border-pink-200 bg-white/90">
-          <CardHeader className="pb-0">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <CardTitle className="text-xl text-pink-700">Canción que suena hoy</CardTitle>
-                <CardDescription>
-                  Dale play y compártanla juntos; puedes cambiarla las veces que quieras.
-                </CardDescription>
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
+          <Card className="border-none bg-gradient-to-br from-rose-50 via-white to-purple-50 shadow-xl shadow-rose-100">
+            <CardHeader className="pb-2">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div className="space-y-1">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-rose-500 shadow-sm">
+                    <Music4 className="h-3.5 w-3.5" />
+                    Canción del día
+                  </div>
+                  <CardTitle className="text-2xl font-bold text-pink-700">Canción que suena hoy</CardTitle>
+                  <CardDescription className="text-sm text-pink-500">
+                    Dale play y vivan su momento; puedes actualizarla cada vez que quieras sorprenderla.
+                  </CardDescription>    
+                </div>
+                <Badge className="self-start bg-gradient-to-r from-rose-400 to-fuchsia-400 text-white shadow sm:self-auto">Hoy</Badge>
               </div>
-              <Badge className="bg-rose-100 text-rose-700">Hoy</Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-6 pt-4">
-            {heroSong ? (
-              <div className="space-y-4">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="space-y-1">
-                    <h3 className="text-lg font-semibold text-pink-700">{heroSong.title}</h3>
+            </CardHeader>
+            <CardContent className="space-y-6 pt-2">
+              {heroSong ? (
+                <div className="space-y-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="space-y-1">
+                      <h3 className="text-xl font-bold text-pink-700">{heroSong.title}</h3>
+                      <p className="text-xs font-medium text-rose-500">
+                        Guardada el {formatLongDate(parseISO(heroSong.date))} · {formatTime(parseISO(heroSong.created_at))}
+                      </p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-center text-gray-500 hover:text-red-500 sm:w-auto"
+                      onClick={() => setPendingDelete(heroSong)}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Quitar canción
+                    </Button>
+                  </div>
+
+                  {heroEmbedUrl ? (
+                    <div className="overflow-hidden rounded-3xl border border-rose-200/70 bg-white/80 shadow-inner">
+                      {isSpotifyEmbed(heroEmbedUrl) ? (
+                        <iframe
+                          title={`Reproductor de Spotify para ${heroSong.title}`}
+                          src={heroEmbedUrl}
+                          className="h-40 w-full sm:h-44 md:h-48"
+                          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                        />
+                      ) : isYoutubeEmbed(heroEmbedUrl) ? (
+                        <div className="aspect-video w-full overflow-hidden">
+                          <iframe
+                            title={`Video de YouTube de ${heroSong.title}`}
+                            src={heroEmbedUrl}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            className="h-full w-full"
+                          />
+                        </div>
+                      ) : (
+                        <audio autoPlay controls loop className="w-full">
+                          <source src={heroEmbedUrl} />
+                          Tu navegador no soporta el elemento de audio.
+                        </audio>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="rounded-2xl border border-dashed border-rose-200 bg-rose-50/70 p-4 text-sm text-gray-600">
+                      Agrega un enlace para que la canción pueda reproducirse aquí automáticamente.
+                    </p>
+                  )}
+
+                  {heroMessage && (
+                    <div className="relative overflow-hidden rounded-3xl border border-rose-200/80 bg-gradient-to-br from-white via-rose-50 to-purple-50 p-6 shadow">
+                      <Quote className="absolute -left-4 -top-4 h-16 w-16 text-rose-200/60" />
+                      <Quote className="absolute -right-4 -bottom-4 h-16 w-16 rotate-180 text-purple-200/50" />
+                      <div className="relative space-y-4">
+                        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.4em] text-rose-400">
+                          <span className="inline-flex h-1.5 w-1.5 rounded-full bg-rose-300" />
+                          Mensaje del corazón
+                          <span className="inline-flex h-1.5 w-1.5 rounded-full bg-purple-300" />
+                        </div>
+                        <div className="space-y-3 text-base font-semibold leading-relaxed text-pink-700">
+                          {heroMessage.split("\n").map((line, index) => (
+                            <p key={`line-${index}`}>{line}</p>
+                          ))}
+                        </div>
+                        <div className="flex items-center gap-2 text-xs font-medium text-rose-400">
+                          <Heart className="h-3.5 w-3.5" /> Hecho con amor
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <p className="text-xs text-rose-400">
+                    <Heart className="mr-1 inline h-3 w-3" /> Algunos navegadores piden un clic inicial para reproducir; si no se escucha, toca el botón de play una vez.
+                  </p>
+                </div>
+              ) : (
+                <p className="rounded-2xl border border-dashed border-rose-200 bg-rose-50/70 p-4 text-center text-sm text-gray-600">
+                  Todavía no tienes una canción dedicada. Guarda una y se reproducirá aquí automáticamente.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="border-pink-200 bg-white/90">
+            <CardHeader className="pb-0">
+              <CardTitle className="text-xl text-pink-700">Guardar o actualizar tu canción</CardTitle>
+              <CardDescription>Elige la fecha, escribe tu dedicatoria y guarda la melodía especial.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form className="space-y-4" onSubmit={handleSaveSong}>
+                <div className="grid gap-4 md:grid-cols-[minmax(0,200px)_1fr]">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-pink-600" htmlFor="dedication-date">
+                      Día de la dedicatoria
+                    </label>
+                    <Input
+                      id="dedication-date"
+                      type="date"
+                      value={dedicationDate}
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                        setDedicationDate(event.target.value)
+                        setSongTitle("")
+                        setSongUrl("")
+                        setDedication("")
+                        setIsDirty(false)
+                        setErrorMessage(null)
+                      }}
+                    />
                     <p className="text-xs text-gray-500">
-                      Guardada el {formatLongDate(parseISO(heroSong.date))} · {formatTime(parseISO(heroSong.created_at))}
+                      Si eliges la fecha de hoy, se actualizará lo que suena ahora mismo.
                     </p>
                   </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-pink-600" htmlFor="song-title">
+                      Nombre de la canción
+                    </label>
+                    <Input
+                      id="song-title"
+                      placeholder="Ej. Nuestra canción favorita"
+                      value={songTitle}
+                      onChange={handleFieldChange(setSongTitle)}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-[minmax(0,200px)_1fr]">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-pink-600" htmlFor="song-url">
+                      Enlace para reproducir
+                    </label>
+                    <Input
+                      id="song-url"
+                      placeholder="YouTube o Spotify"
+                      value={songUrl}
+                      onChange={handleFieldChange(setSongUrl)}
+                    />
+                    <p className="text-xs text-gray-500">
+                      Solo se aceptan enlaces de YouTube o Spotify. El reproductor se actualiza automáticamente.
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-pink-600" htmlFor="song-message">
+                      Mensaje para ella
+                    </label>
+                    <Textarea
+                      id="song-message"
+                      placeholder="Cuéntale por qué elegiste esta canción y qué sientes cuando suena."
+                      rows={4}
+                      value={dedication}
+                      onChange={handleFieldChange(setDedication)}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col-reverse gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="text-sm text-gray-500">
+                    {songForSelectedDate ? (
+                      <span>
+                        Ya existe una canción guardada para {formatLongDate(parseISO(songForSelectedDate.date))}. Se reemplazará al guardar.
+                      </span>
+                    ) : (
+                      <span>
+                        Guarda una nueva canción para esa fecha; puedes cambiarla cuando quieras.
+                      </span>
+                    )}
+                  </div>
                   <Button
-                    variant="ghost"
-                    className="text-gray-500 hover:text-red-500"
-                    onClick={() => setPendingDelete(heroSong)}
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-rose-400 via-pink-400 to-fuchsia-400 text-white hover:from-rose-500 hover:via-pink-500 hover:to-fuchsia-500 sm:w-auto"
                   >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Quitar canción
+                    Guardar dedicatoria musical
                   </Button>
                 </div>
 
-                {heroEmbedUrl ? (
-                  <div className="rounded-2xl border border-rose-200 bg-rose-50/70 p-4">
-                    {isSpotifyEmbed(heroEmbedUrl) ? (
-                      <iframe
-                        title={`Reproductor de Spotify para ${heroSong.title}`}
-                        src={heroEmbedUrl}
-                        className="h-28 w-full rounded-xl"
-                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                      />
-                    ) : isYoutubeEmbed(heroEmbedUrl) ? (
-                      <div className="aspect-video w-full overflow-hidden rounded-xl">
-                        <iframe
-                          title={`Video de YouTube de ${heroSong.title}`}
-                          src={heroEmbedUrl}
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                          className="h-full w-full"
-                        />
-                      </div>
-                    ) : (
-                      <audio autoPlay controls loop className="w-full">
-                        <source src={heroEmbedUrl} />
-                        Tu navegador no soporta el elemento de audio.
-                      </audio>
-                    )}
-                  </div>
-                ) : (
-                  <p className="rounded-2xl border border-dashed border-rose-200 bg-rose-50/70 p-4 text-sm text-gray-600">
-                    Agrega un enlace para que la canción pueda reproducirse aquí automáticamente.
-                  </p>
+                {songForSelectedDate && !isDirty && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full border-rose-200 text-pink-600 hover:bg-rose-50"
+                    onClick={loadSavedDedication}
+                  >
+                    Rellenar con la canción guardada
+                  </Button>
                 )}
-
-                {heroMessage && (
-                  <div className="rounded-2xl border border-rose-200 bg-gradient-to-r from-white via-rose-50 to-pink-50 p-4 text-sm text-gray-700">
-                    {heroMessage.split("\n").map((line, index) => (
-                      <p key={`line-${index}`}>{line}</p>
-                    ))}
-                  </div>
-                )}
-
-                <p className="text-xs text-gray-500">
-                  Algunos navegadores requieren interacción para comenzar a sonar; si no se escucha, toca el botón de play una vez.
-                </p>
-              </div>
-            ) : (
-              <p className="rounded-2xl border border-dashed border-rose-200 bg-rose-50/70 p-4 text-center text-sm text-gray-600">
-                Todavía no tienes una canción dedicada. Guarda una y se reproducirá aquí automáticamente.
-              </p>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card className="border-pink-200 bg-white/90">
-          <CardHeader className="pb-0">
-            <CardTitle className="text-xl text-pink-700">Guardar o actualizar tu canción</CardTitle>
-            <CardDescription>Elige la fecha, escribe tu dedicatoria y guarda la melodía especial.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form className="space-y-4" onSubmit={handleSaveSong}>
-              <div className="grid gap-4 md:grid-cols-[minmax(0,200px)_1fr]">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-pink-600" htmlFor="dedication-date">
-                    Día de la dedicatoria
-                  </label>
-                  <Input
-                    id="dedication-date"
-                    type="date"
-                    value={dedicationDate}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                      setDedicationDate(event.target.value)
-                      setSongTitle("")
-                      setSongUrl("")
-                      setDedication("")
-                      setIsDirty(false)
-                      setErrorMessage(null)
-                    }}
-                  />
-                  <p className="text-xs text-gray-500">
-                    Si eliges la fecha de hoy, se actualizará lo que suena ahora mismo.
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-pink-600" htmlFor="song-title">
-                    Nombre de la canción
-                  </label>
-                  <Input
-                    id="song-title"
-                    placeholder="Ej. Nuestra canción favorita"
-                    value={songTitle}
-                    onChange={handleFieldChange(setSongTitle)}
-                  />
-                </div>
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-[minmax(0,200px)_1fr]">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-pink-600" htmlFor="song-url">
-                    Enlace para reproducir
-                  </label>
-                  <Input
-                    id="song-url"
-                    placeholder="YouTube o Spotify"
-                    value={songUrl}
-                    onChange={handleFieldChange(setSongUrl)}
-                  />
-                  <p className="text-xs text-gray-500">
-                    Solo se aceptan enlaces de YouTube o Spotify. El reproductor se actualiza automáticamente.
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-pink-600" htmlFor="song-message">
-                    Mensaje para ella
-                  </label>
-                  <Textarea
-                    id="song-message"
-                    placeholder="Cuéntale por qué elegiste esta canción y qué sientes cuando suena."
-                    rows={4}
-                    value={dedication}
-                    onChange={handleFieldChange(setDedication)}
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="text-sm text-gray-500">
-                  {songForSelectedDate ? (
-                    <span>
-                      Ya existe una canción guardada para {formatLongDate(parseISO(songForSelectedDate.date))}. Se reemplazará al guardar.
-                    </span>
-                  ) : (
-                    <span>
-                      Guarda una nueva canción para esa fecha; puedes cambiarla cuando quieras.
-                    </span>
-                  )}
-                </div>
-                <Button
-                  type="submit"
-                  className="bg-gradient-to-r from-rose-400 via-pink-400 to-fuchsia-400 text-white hover:from-rose-500 hover:via-pink-500 hover:to-fuchsia-500"
-                >
-                  Guardar dedicatoria musical
-                </Button>
-              </div>
-
-              {songForSelectedDate && !isDirty && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full border-rose-200 text-pink-600 hover:bg-rose-50"
-                  onClick={loadSavedDedication}
-                >
-                  Rellenar con la canción guardada
-                </Button>
-              )}
-            </form>
-          </CardContent>
-        </Card>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
 
         <Card className="border-pink-200 bg-white/90">
           <CardHeader className="pb-0">
             <CardTitle className="text-xl text-pink-700">Canciones que hemos dedicado</CardTitle>
             <CardDescription>Un repaso de las melodías que ya forman parte de su historia.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3 pt-6">
+          <CardContent className="space-y-4 pt-6">
             {recentSongs.length === 0 ? (
               <p className="text-sm text-gray-600">
                 Aún no hay canciones registradas. Cuando guardes una dedicatoria aparecerá aquí.
@@ -478,7 +498,7 @@ export function MusicDedication({ onBack }: { onBack: () => void }) {
                 return (
                   <div
                     key={song.id}
-                    className="flex flex-wrap items-start justify-between gap-3 rounded-2xl border border-rose-200 bg-gradient-to-r from-white via-rose-50 to-pink-50 p-4"
+                    className="flex flex-col gap-3 rounded-2xl border border-rose-200 bg-gradient-to-r from-white via-rose-50 to-pink-50 p-4 sm:flex-row sm:items-start sm:justify-between"
                   >
                     <div className="space-y-1">
                       <p className="font-semibold text-pink-700">{song.title}</p>
@@ -486,7 +506,7 @@ export function MusicDedication({ onBack }: { onBack: () => void }) {
                         {formatShortDate(parseISO(song.date))} · {formatTime(parseISO(song.created_at))}
                       </p>
                       {song.message && (
-                        <p className="text-sm text-gray-600 overflow-hidden text-ellipsis">
+                        <p className="overflow-hidden text-ellipsis text-sm text-gray-600">
                           {song.message}
                         </p>
                       )}
@@ -494,7 +514,7 @@ export function MusicDedication({ onBack }: { onBack: () => void }) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="text-gray-400 hover:text-red-500"
+                      className="self-start text-gray-400 hover:text-red-500"
                       onClick={() => setPendingDelete(song)}
                       aria-label="Eliminar dedicatoria"
                     >
