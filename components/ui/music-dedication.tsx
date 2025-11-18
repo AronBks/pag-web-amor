@@ -2,14 +2,14 @@
 
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react"
 import { format, parseISO } from "date-fns"
-import { Heart, Music4, Quote, Sparkles, Trash2 } from "lucide-react"
+import { Heart, Music4, Quote, Sparkles, Trash2, Volume2 } from "lucide-react"
 import BackButton from "@/components/ui/back-button"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { useMusicDedications, type MusicDedication } from "@/hooks/use-music-dedications"
+import { useMusicDedications, type MusicDedication as MusicDedicationEntry } from "@/hooks/use-music-dedications"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -62,20 +62,39 @@ const extractSpotifyId = (url: string) => {
   return ""
 }
 
-const getEmbedUrl = (url: string) => {
+type EmbedOptions = {
+  autoplay?: boolean
+  mute?: boolean
+}
+
+const getEmbedUrl = (url: string, options?: EmbedOptions) => {
   if (!url) return ""
+
+  const autoplay = options?.autoplay ?? true
+  const mute = options?.mute ?? true
 
   const youtubeId = extractYouTubeId(url)
   if (youtubeId) {
-    return `https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&controls=1`
+    const params = new URLSearchParams({
+      autoplay: autoplay ? "1" : "0",
+      mute: mute ? "1" : "0",
+      controls: "1",
+      playsinline: "1",
+      enablejsapi: "1",
+    })
+    return `https://www.youtube.com/embed/${youtubeId}?${params.toString()}`
   }
 
   const spotifyId = extractSpotifyId(url)
   if (spotifyId) {
-    if (url.includes("playlist")) {
-      return `https://open.spotify.com/embed/playlist/${spotifyId}?utm_source=generator&autoplay=1`
+    const base = url.includes("playlist")
+      ? `https://open.spotify.com/embed/playlist/${spotifyId}`
+      : `https://open.spotify.com/embed/track/${spotifyId}`
+    const params = new URLSearchParams({ utm_source: "generator" })
+    if (autoplay) {
+      params.set("autoplay", "1")
     }
-    return `https://open.spotify.com/embed/track/${spotifyId}?utm_source=generator&autoplay=1`
+    return `${base}?${params.toString()}`
   }
 
   return url
@@ -95,14 +114,14 @@ const isValidUrl = (value: string) => {
   }
 }
 
-const sortByCreatedDesc = (items: MusicDedication[]) =>
+const sortByCreatedDesc = (items: MusicDedicationEntry[]) =>
   [...items].sort(
     (eventA, eventB) => parseISO(eventB.created_at).getTime() - parseISO(eventA.created_at).getTime()
   )
 
 const todayKey = getIsoDate(new Date())
 
-export function MusicDedication({ onBack }: { onBack: () => void }) {
+export function MusicDedicationSection({ onBack }: { onBack: () => void }) {
   const { dedications, isLoading, saveDedication, deleteDedication } = useMusicDedications()
 
   const [dedicationDate, setDedicationDate] = useState<string>(todayKey)
@@ -110,7 +129,7 @@ export function MusicDedication({ onBack }: { onBack: () => void }) {
   const [songUrl, setSongUrl] = useState("")
   const [dedication, setDedication] = useState("")
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [pendingDelete, setPendingDelete] = useState<MusicDedication | null>(null)
+  const [pendingDelete, setPendingDelete] = useState<MusicDedicationEntry | null>(null)
   const [isDirty, setIsDirty] = useState(false)
 
   const todaysSong = useMemo(
@@ -126,8 +145,13 @@ export function MusicDedication({ onBack }: { onBack: () => void }) {
   )
 
   const heroSong = todaysSong ?? recentSongs[0] ?? null
-  const heroEmbedUrl = getEmbedUrl(heroSong?.url ?? "")
+  const [isHeroUnmuted, setIsHeroUnmuted] = useState(false)
+  const heroEmbedUrl = getEmbedUrl(heroSong?.url ?? "", { autoplay: true, mute: !isHeroUnmuted })
   const heroMessage = heroSong?.message?.trim() ?? ""
+
+  useEffect(() => {
+    setIsHeroUnmuted(false)
+  }, [heroSong?.id])
 
   useEffect(() => {
     if (!songForSelectedDate) {
@@ -317,11 +341,11 @@ export function MusicDedication({ onBack }: { onBack: () => void }) {
                         <iframe
                           title={`Reproductor de Spotify para ${heroSong.title}`}
                           src={heroEmbedUrl}
-                          className="h-40 w-full sm:h-44 md:h-48"
+                          className="h-56 w-full sm:h-60 md:h-64"
                           allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                         />
                       ) : isYoutubeEmbed(heroEmbedUrl) ? (
-                        <div className="aspect-video w-full overflow-hidden">
+                        <div className="relative w-full overflow-hidden aspect-[4/3] sm:aspect-video">
                           <iframe
                             title={`Video de YouTube de ${heroSong.title}`}
                             src={heroEmbedUrl}
@@ -329,6 +353,16 @@ export function MusicDedication({ onBack }: { onBack: () => void }) {
                             allowFullScreen
                             className="h-full w-full"
                           />
+                          {!isHeroUnmuted && (
+                            <button
+                              type="button"
+                              className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/50 px-6 text-center text-sm font-medium text-white transition hover:bg-black/60"
+                              onClick={() => setIsHeroUnmuted(true)}
+                            >
+                              <Volume2 className="h-6 w-6" />
+                              <span>Toca aquí para escucharlo con sonido</span>
+                            </button>
+                          )}
                         </div>
                       ) : (
                         <audio autoPlay controls loop className="w-full">
@@ -366,7 +400,7 @@ export function MusicDedication({ onBack }: { onBack: () => void }) {
                   )}
 
                   <p className="text-xs text-rose-400">
-                    <Heart className="mr-1 inline h-3 w-3" /> Algunos navegadores piden un clic inicial para reproducir; si no se escucha, toca el botón de play una vez.
+                    <Heart className="mr-1 inline h-3 w-3" /> Toca el reproductor para activarlo en tu celular y usa el volumen del teléfono para escucharlo mejor.
                   </p>
                 </div>
               ) : (
@@ -531,4 +565,4 @@ export function MusicDedication({ onBack }: { onBack: () => void }) {
   )
 }
 
-export default MusicDedication
+export default MusicDedicationSection

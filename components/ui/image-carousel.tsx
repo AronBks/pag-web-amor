@@ -141,6 +141,7 @@ export function ImageCarousel() {
           {/* Navigation buttons */}
           <button
             onClick={scrollPrev}
+            aria-label="Ver foto anterior"
             className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white/90 rounded-full p-2 shadow-lg z-10 transition-all duration-200"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -149,6 +150,7 @@ export function ImageCarousel() {
           </button>
           <button
             onClick={scrollNext}
+            aria-label="Ver foto siguiente"
             className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white/90 rounded-full p-2 shadow-lg z-10 transition-all duration-200"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -162,6 +164,7 @@ export function ImageCarousel() {
               <button
                 key={index}
                 onClick={() => emblaApi?.scrollTo(index)}
+                aria-label={`Ir a la foto ${index + 1}`}
                 className={`w-2 h-2 rounded-full transition-all duration-200 ${
                   index === selectedIndex ? 'bg-pink-500 w-6' : 'bg-white/60 hover:bg-white/80'
                 }`}

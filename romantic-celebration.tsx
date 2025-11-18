@@ -23,7 +23,7 @@ import { SpecialMessage } from "@/components/ui/special-message"
 import BackButton from "@/components/ui/back-button"
 import LoveCalendar from "@/components/ui/love-calendar"
 import GymCalendar from "@/components/ui/gym-calendar"
-import MusicDedication from "@/components/ui/music-dedication"
+import MusicDedicationSection from "@/components/ui/music-dedication"
 
 export default function Component() {
   const [currentSection, setCurrentSection] = useState("main")
@@ -354,7 +354,7 @@ export default function Component() {
         )}
 
         {currentSection === "music" && (
-          <MusicDedication onBack={() => setCurrentSection("main")} />
+          <MusicDedicationSection onBack={() => setCurrentSection("main")} />
         )}
         {/* Footer */}
         <div className="text-center py-8">
