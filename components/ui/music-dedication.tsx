@@ -308,9 +308,6 @@ export function MusicDedicationSection({ onBack }: { onBack: () => void }) {
                     Canción del día
                   </div>
                   <CardTitle className="text-2xl font-bold text-pink-700">Canción que suena hoy</CardTitle>
-                  <CardDescription className="text-sm text-pink-500">
-                    Dale play y vivan su momento; puedes actualizarla cada vez que quieras sorprenderla.
-                  </CardDescription>    
                 </div>
                 <Badge className="self-start bg-gradient-to-r from-rose-400 to-fuchsia-400 text-white shadow sm:self-auto">Hoy</Badge>
               </div>
@@ -529,31 +526,82 @@ export function MusicDedicationSection({ onBack }: { onBack: () => void }) {
               </p>
             ) : (
               recentSongs.map((song) => {
+                const embedUrl = getEmbedUrl(song.url, { autoplay: false, mute: true })
+                const isEmbeddedLink = isSpotifyEmbed(embedUrl) || isYoutubeEmbed(embedUrl)
+
                 return (
                   <div
                     key={song.id}
-                    className="flex flex-col gap-3 rounded-2xl border border-rose-200 bg-gradient-to-r from-white via-rose-50 to-pink-50 p-4 sm:flex-row sm:items-start sm:justify-between"
+                    className="flex flex-col gap-4 rounded-2xl border border-rose-200 bg-gradient-to-r from-white via-rose-50 to-pink-50 p-4"
                   >
-                    <div className="space-y-1">
-                      <p className="font-semibold text-pink-700">{song.title}</p>
-                      <p className="text-xs text-gray-500">
-                        {formatShortDate(parseISO(song.date))} · {formatTime(parseISO(song.created_at))}
-                      </p>
-                      {song.message && (
-                        <p className="overflow-hidden text-ellipsis text-sm text-gray-600">
-                          {song.message}
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="space-y-1">
+                        <p className="font-semibold text-pink-700">{song.title}</p>
+                        <p className="text-xs text-gray-500">
+                          {formatShortDate(parseISO(song.date))} · {formatTime(parseISO(song.created_at))}
                         </p>
-                      )}
+                        {song.message && (
+                          <p className="overflow-hidden text-ellipsis text-sm text-gray-600">
+                            {song.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {song.url && (
+                          <a
+                            href={song.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-white px-3 py-1 text-xs font-semibold text-rose-500 transition hover:bg-rose-50"
+                          >
+                            Escuchar canción
+                          </a>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-gray-400 hover:text-red-500"
+                          onClick={() => setPendingDelete(song)}
+                          aria-label="Eliminar dedicatoria"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="self-start text-gray-400 hover:text-red-500"
-                      onClick={() => setPendingDelete(song)}
-                      aria-label="Eliminar dedicatoria"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+
+                    {song.url && (
+                      <div className="overflow-hidden rounded-2xl border border-rose-200/70 bg-white/80">
+                        {isEmbeddedLink ? (
+                          isSpotifyEmbed(embedUrl) ? (
+                            <iframe
+                              title={`Spotify: ${song.title}`}
+                              src={embedUrl}
+                              className="h-40 w-full"
+                              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                            />
+                          ) : (
+                            <div className="aspect-video w-full">
+                              <iframe
+                                title={`YouTube: ${song.title}`}
+                                src={embedUrl}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                                className="h-full w-full"
+                              />
+                            </div>
+                          )
+                        ) : (
+                          <a
+                            href={song.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block rounded-xl border border-dashed border-rose-200 bg-rose-50/60 p-3 text-center text-sm text-rose-500"
+                          >
+                            Abre el enlace dedicado para escucharla
+                          </a>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )
               })
