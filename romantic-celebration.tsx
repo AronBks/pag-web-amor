@@ -14,7 +14,6 @@ import {
   MapPin,
   Home,
   Gamepad2,
-  Dumbbell,
   Music4,
 } from "lucide-react"
 import { ImageCarousel } from "@/components/ui/image-carousel"
@@ -22,7 +21,6 @@ import { HerGallery } from "@/components/ui/her-gallery"
 import { SpecialMessage } from "@/components/ui/special-message"
 import BackButton from "@/components/ui/back-button"
 import LoveCalendar from "@/components/ui/love-calendar"
-import GymCalendar from "@/components/ui/gym-calendar"
 import MusicDedicationSection from "@/components/ui/music-dedication"
 
 export default function Component() {
@@ -137,7 +135,7 @@ export default function Component() {
                   </p>
                 </div>
 
-                <div className="grid gap-4 mt-8 items-stretch sm:grid-cols-2 lg:grid-cols-5">
+                <div className="grid gap-4 mt-8 items-stretch sm:grid-cols-2 lg:grid-cols-4">
                   <Button
                     onClick={() => setCurrentSection("plans")}
                     className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white p-6 h-auto flex flex-col gap-2 rounded-xl shadow-lg"
@@ -163,15 +161,6 @@ export default function Component() {
                     <CalendarHeart size={32} />
                     <span className="font-semibold">Nuestro Calendario</span>
                     <span className="text-sm opacity-90">Organiza planes y sorpresas juntos</span>
-                  </Button>
-
-                  <Button
-                    onClick={() => setCurrentSection("gym-calendar")}
-                    className="bg-gradient-to-r from-emerald-500 via-cyan-500 to-blue-500 hover:from-emerald-600 hover:via-cyan-600 hover:to-blue-600 text-white p-6 h-auto flex flex-col gap-2 rounded-xl shadow-lg"
-                  >
-                    <Dumbbell size={32} />
-                    <span className="font-semibold">Agenda Fitness</span>
-                    <span className="text-sm opacity-90">Sigue tus entrenamientos juntos</span>
                   </Button>
 
                   <Button
@@ -347,10 +336,6 @@ export default function Component() {
 
         {currentSection === "calendar" && (
           <LoveCalendar onBack={() => setCurrentSection("main")} />
-        )}
-
-        {currentSection === "gym-calendar" && (
-          <GymCalendar onBack={() => setCurrentSection("main")} />
         )}
 
         {currentSection === "music" && (
