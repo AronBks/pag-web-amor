@@ -122,14 +122,13 @@ const sortByCreatedDesc = (items: MusicDedicationEntry[]) =>
 const todayKey = getIsoDate(new Date())
 
 export function MusicDedicationSection({ onBack }: { onBack: () => void }) {
-  const { dedications, isLoading, saveDedication, deleteDedication } = useMusicDedications()
+  const { dedications, isLoading, saveDedication } = useMusicDedications()
 
   const [dedicationDate, setDedicationDate] = useState<string>(todayKey)
   const [songTitle, setSongTitle] = useState("")
   const [songUrl, setSongUrl] = useState("")
   const [dedication, setDedication] = useState("")
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [pendingDelete, setPendingDelete] = useState<MusicDedicationEntry | null>(null)
   const [isDirty, setIsDirty] = useState(false)
 
   const todaysSong = useMemo(
@@ -137,7 +136,7 @@ export function MusicDedicationSection({ onBack }: { onBack: () => void }) {
     [dedications]
   )
 
-  const recentSongs = useMemo(() => sortByCreatedDesc(dedications).slice(0, 6), [dedications])
+  const recentSongs = useMemo(() => sortByCreatedDesc(dedications), [dedications])
 
   const songForSelectedDate = useMemo(
     () => dedications.find((event) => event.date === dedicationDate) ?? null,
@@ -154,22 +153,11 @@ export function MusicDedicationSection({ onBack }: { onBack: () => void }) {
   }, [heroSong?.id])
 
   useEffect(() => {
-    if (!songForSelectedDate) {
-      setSongTitle("")
-      setSongUrl("")
-      setDedication("")
-      setIsDirty(false)
-    }
-  }, [songForSelectedDate])
-
-  const loadSavedDedication = () => {
-    if (!songForSelectedDate) return
-    setSongTitle(songForSelectedDate.title)
-    setSongUrl(songForSelectedDate.url)
-    setDedication(songForSelectedDate.message ?? "")
-    setIsDirty(true)
-    setErrorMessage(null)
-  }
+    setSongTitle("")
+    setSongUrl("")
+    setDedication("")
+    setIsDirty(false)
+  }, [dedicationDate])
 
   const handleFieldChange = <T extends string>(setter: (value: string) => void) => {
     return (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -225,16 +213,6 @@ export function MusicDedicationSection({ onBack }: { onBack: () => void }) {
     }
   }
 
-  const handleDeleteSong = async (id: string) => {
-    const result = await deleteDedication(id)
-    if (!result.success) {
-      setErrorMessage(result.message ?? "No se pudo eliminar la dedicatoria musical.")
-    } else {
-      setErrorMessage(null)
-    }
-    return result
-  }
-
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center gap-3 py-20 text-center">
@@ -245,41 +223,7 @@ export function MusicDedicationSection({ onBack }: { onBack: () => void }) {
   }
 
   return (
-    <>
-      <AlertDialog
-        open={Boolean(pendingDelete)}
-        onOpenChange={(open) => {
-          if (!open) {
-            setPendingDelete(null)
-          }
-        }}
-      >
-        <AlertDialogContent className="bg-white">
-          <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar esta canción dedicada?</AlertDialogTitle>
-            <AlertDialogDescription>
-              {pendingDelete
-                ? `Se eliminará "${pendingDelete.title}" del ${formatLongDate(parseISO(pendingDelete.date))}.`
-                : "Se eliminará la canción seleccionada."}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setPendingDelete(null)}>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-gradient-to-r from-rose-400 via-pink-400 to-fuchsia-400 text-white hover:from-rose-500 hover:via-pink-500 hover:to-fuchsia-500"
-              onClick={async () => {
-                if (!pendingDelete) return
-                await handleDeleteSong(pendingDelete.id)
-                setPendingDelete(null)
-              }}
-            >
-              Eliminar
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <div className="space-y-6">
+    <div className="space-y-6">
         <BackButton onClick={onBack} label="← Volver" />
 
         <div className="space-y-3 text-center">
@@ -322,14 +266,6 @@ export function MusicDedicationSection({ onBack }: { onBack: () => void }) {
                         Guardada el {formatLongDate(parseISO(heroSong.date))} · {formatTime(parseISO(heroSong.created_at))}
                       </p>
                     </div>
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-center text-gray-500 hover:text-red-500 sm:w-auto"
-                      onClick={() => setPendingDelete(heroSong)}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Quitar canción
-                    </Button>
                   </div>
 
                   {heroEmbedUrl ? (
@@ -481,15 +417,9 @@ export function MusicDedicationSection({ onBack }: { onBack: () => void }) {
 
                 <div className="flex flex-col-reverse gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="text-sm text-gray-500">
-                    {songForSelectedDate ? (
-                      <span>
-                        Ya existe una canción guardada para {formatLongDate(parseISO(songForSelectedDate.date))}. Se reemplazará al guardar.
-                      </span>
-                    ) : (
-                      <span>
-                        Guarda una nueva canción para esa fecha; puedes cambiarla cuando quieras.
-                      </span>
-                    )}
+                    <span>
+                      Guarda una nueva canción para esa fecha; se agregará a vuestra playlist.
+                    </span>
                   </div>
                   <Button
                     type="submit"
@@ -498,17 +428,6 @@ export function MusicDedicationSection({ onBack }: { onBack: () => void }) {
                     Guardar dedicatoria musical
                   </Button>
                 </div>
-
-                {songForSelectedDate && !isDirty && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full border-rose-200 text-pink-600 hover:bg-rose-50"
-                    onClick={loadSavedDedication}
-                  >
-                    Rellenar con la canción guardada
-                  </Button>
-                )}
               </form>
             </CardContent>
           </Card>
@@ -557,15 +476,6 @@ export function MusicDedicationSection({ onBack }: { onBack: () => void }) {
                             Escuchar canción
                           </a>
                         )}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-gray-400 hover:text-red-500"
-                          onClick={() => setPendingDelete(song)}
-                          aria-label="Eliminar dedicatoria"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
                       </div>
                     </div>
 
@@ -609,7 +519,7 @@ export function MusicDedicationSection({ onBack }: { onBack: () => void }) {
           </CardContent>
         </Card>
       </div>
-    </>
+    </div>
   )
 }
 

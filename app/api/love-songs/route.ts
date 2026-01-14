@@ -39,12 +39,12 @@ export async function POST(request: NextRequest) {
 
     const { data, error } = await supabase
       .from(TABLE_NAME)
-      .upsert({
+      .insert({
         date,
         title,
         url,
         message: message ?? "",
-      }, { onConflict: "date" })
+      })
       .select("id, date, title, url, message, created_at")
       .single()
 

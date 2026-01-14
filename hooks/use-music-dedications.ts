@@ -62,8 +62,7 @@ export function useMusicDedications() {
 
       const data = (await response.json()) as { dedication: MusicDedication }
       setDedications((previous) => {
-        const filtered = previous.filter((item) => item.id !== data.dedication.id && item.date !== data.dedication.date)
-        return [data.dedication, ...filtered]
+        return [data.dedication, ...previous]
       })
 
       return { success: true, dedication: data.dedication }
