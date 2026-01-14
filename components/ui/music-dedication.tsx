@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react"
 import { format, parseISO } from "date-fns"
-import { Heart, Music4, Quote, Sparkles, Trash2, Volume2 } from "lucide-react"
+import { Heart, Music4, Quote, Sparkles, Volume2 } from "lucide-react"
 import BackButton from "@/components/ui/back-button"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -10,16 +10,6 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { useMusicDedications, type MusicDedication as MusicDedicationEntry } from "@/hooks/use-music-dedications"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
 
 const getIsoDate = (date: Date) => format(date, "yyyy-MM-dd")
 
@@ -519,7 +509,6 @@ export function MusicDedicationSection({ onBack }: { onBack: () => void }) {
           </CardContent>
         </Card>
       </div>
-    </div>
   )
 }
 
