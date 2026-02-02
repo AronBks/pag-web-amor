@@ -2,7 +2,17 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Heart } from "lucide-react"
+import { Heart, Trash2 } from "lucide-react"
+import { GalleryUpload } from "./gallery-upload"
+import { useState, useEffect } from "react"
+
+interface RemoteImage {
+  id: string
+  url: string
+  caption: string
+  date: string
+  created_at: string
+}
 
 const herPhotos = [
   "/fotos-nosotros/ella1.jpg",
@@ -81,8 +91,46 @@ interface HerGalleryProps {
 }
 
 export function HerGallery({ onBack }: HerGalleryProps) {
+  const [remoteImages, setRemoteImages] = useState<RemoteImage[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  const fetchImages = async () => {
+    try {
+      const response = await fetch("/api/love-gallery")
+      if (response.ok) {
+        const data = await response.json()
+        setRemoteImages(data.images || [])
+      }
+    } catch (error) {
+      console.error("Error fetching images:", error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchImages()
+    
+    // Listen for updates from the main page upload
+    const handleUpdate = () => fetchImages()
+    window.addEventListener('gallery-updated', handleUpdate)
+    return () => window.removeEventListener('gallery-updated', handleUpdate)
+  }, [])
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("¿Seguro que quieres borrar este momento?")) return
+    try {
+      const response = await fetch(`/api/love-gallery?id=${id}`, { method: 'DELETE' })
+      if (response.ok) {
+        setRemoteImages(remoteImages.filter(img => img.id !== id))
+      }
+    } catch (error) {
+      console.error("Error deleting image:", error)
+    }
+  }
+
   return (
-    <div className="space-y-6 relative z-20">
+    <div className="space-y-12 relative z-20">
       <div className="text-center">
         <Button
           onClick={onBack}
@@ -98,6 +146,31 @@ export function HerGallery({ onBack }: HerGalleryProps) {
       </div>
 
       <div className="columns-2 md:columns-3 gap-4 space-y-4">
+        {/* Render Remote Images first */}
+        {remoteImages.map((image) => (
+          <div key={image.id} className="break-inside-avoid">
+            <Card className="bg-white/95 backdrop-blur-md border-pink-200 shadow-xl overflow-hidden group hover:scale-[1.02] transition-transform">
+              <CardContent className="p-0 relative">
+                <img
+                  src={image.url}
+                  alt={image.caption || "Recuerdo subido"}
+                  className="w-full h-auto"
+                />
+                <div className="p-3">
+                  {image.caption && <p className="text-sm text-pink-700 font-medium">{image.caption}</p>}
+                  <p className="text-[10px] text-gray-500 mt-1">{formatDateLong(image.date)}</p>
+                </div>
+                <button
+                  onClick={() => handleDelete(image.id)}
+                  className="absolute top-2 right-2 p-1.5 bg-red-100 text-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-200"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </CardContent>
+            </Card>
+          </div>
+        ))}
+
         {herPhotos.map((src, index) => {
           if (src.includes("ella1.jpg")) {
             return (
