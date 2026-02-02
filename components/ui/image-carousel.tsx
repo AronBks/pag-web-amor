@@ -6,6 +6,14 @@ import Autoplay from "embla-carousel-autoplay"
 import { Card, CardContent } from "@/components/ui/card"
 import { Heart } from "lucide-react"
 
+interface RemoteImage {
+  id: string
+  url: string
+  caption: string
+  date: string
+  created_at: string
+}
+
 const images = [
   "/fotos-nosotros/foto 1.jpg",
   "/fotos-nosotros/foto 2.jpg",
@@ -66,15 +74,42 @@ function formatDateLong(dateStr: string) {
 }
 
 export function ImageCarousel() {
+  const [remoteImages, setRemoteImages] = React.useState<RemoteImage[]>([])
+
+  const fetchImages = React.useCallback(() => {
+    fetch("/api/love-gallery")
+      .then(res => res.json())
+      .then(data => {
+        if (data.images) setRemoteImages(data.images)
+      })
+      .catch(err => console.error("Error fetching images:", err))
+  }, [])
+
+  React.useEffect(() => {
+    fetchImages()
+
+    // Listen for updates from the main page upload
+    const handleUpdate = () => fetchImages()
+    window.addEventListener('gallery-updated', handleUpdate)
+    return () => window.removeEventListener('gallery-updated', handleUpdate)
+  }, [fetchImages])
+
+  // Combine static and remote images
+  const allImages = React.useMemo(() => {
+    const remote = remoteImages.map(img => ({ url: img.url, date: img.date }))
+    const staticImgs = images.map(url => ({ url, date: imageDates[url] || "" }))
+    return [...remote, ...staticImgs]
+  }, [remoteImages])
+
   // randomize order on each page load (memoized)
   const shuffledImages = React.useMemo(() => {
-    const a = images.slice()
+    const a = allImages.slice()
     for (let i = a.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1))
       ;[a[i], a[j]] = [a[j], a[i]]
     }
     return a
-  }, [])
+  }, [allImages])
 
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'center' }, [Autoplay({ delay: 3500, stopOnInteraction: true })])
   const [selectedIndex, setSelectedIndex] = React.useState(0)
@@ -109,25 +144,25 @@ export function ImageCarousel() {
         <div className="relative">
           <div className="overflow-hidden" ref={emblaRef}>
             <div className="flex transition-transform duration-700 ease-in-out">
-              {shuffledImages.map((src, index) => (
+              {shuffledImages.map((imgObj, index) => (
                   <div className="flex-grow-0 flex-shrink-0 w-full min-w-0" key={index}>
                     <div className="rounded-xl overflow-hidden shadow-lg border-2 border-white bg-pink-50 flex items-center justify-center relative">
                       <img 
-                        src={src} 
+                        src={imgObj.url} 
                         alt={`Foto ${index + 1}`} 
                         className="max-w-full max-h-[60vh] object-contain"
                         onError={(e) => {
-                          console.error(`Error loading image: ${src}`)
+                          console.error(`Error loading image: ${imgObj.url}`)
                           e.currentTarget.style.display = 'none'
                         }}
                       />
-                    {imageDates[src] && (
+                    {imgObj.date && (
                       <div className="absolute left-4 top-4 bg-gradient-to-r from-pink-400 to-purple-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-lg flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M7 10h5v5H7z" opacity=".9" />
                           <path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v13a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zM5 9h14v10H5z"/>
                         </svg>
-                        <span className="text-[11px] leading-none">{formatDateLong(imageDates[src])}</span>
+                        <span className="text-[11px] leading-none">{formatDateLong(imgObj.date)}</span>
                       </div>
                     )}
                     {/* no overlay; image is centered and fully visible */}

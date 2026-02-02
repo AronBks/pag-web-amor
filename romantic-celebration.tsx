@@ -16,12 +16,13 @@ import {
   Gamepad2,
   Music4,
 } from "lucide-react"
-import { ImageCarousel } from "@/components/ui/image-carousel"
 import { HerGallery } from "@/components/ui/her-gallery"
 import { SpecialMessage } from "@/components/ui/special-message"
 import BackButton from "@/components/ui/back-button"
 import LoveCalendar from "@/components/ui/love-calendar"
 import MusicDedicationSection from "@/components/ui/music-dedication"
+import { GalleryUpload } from "./components/ui/gallery-upload"
+import { PhotoMosaic } from "./components/ui/photo-mosaic"
 
 export default function Component() {
   const [currentSection, setCurrentSection] = useState("main")
@@ -108,7 +109,16 @@ export default function Component() {
         {currentSection === "main" && (
           <>
             {/* Photo Gallery Section */}
-            <ImageCarousel />
+            <div className="space-y-8">
+              <PhotoMosaic />
+              
+              <div className="max-w-2xl mx-auto px-2">
+                <GalleryUpload onUploadSuccess={() => {
+                  // This will trigger a refresh in components that fetch images
+                  window.dispatchEvent(new CustomEvent('gallery-updated'))
+                }} />
+              </div>
+            </div>
 
             {/* Main Card */}
             <Card className="bg-white/95 backdrop-blur-md border-pink-300 shadow-2xl ring-1 ring-pink-200/50 relative z-20">
