@@ -73,11 +73,15 @@ function formatDateLong(dateStr: string) {
 
 export function PhotoMosaic() {
   const [remoteImages, setRemoteImages] = React.useState<RemoteImage[]>([])
+  const [shuffledStatics, setShuffledStatics] = React.useState<any[]>([])
   const [loading, setLoading] = React.useState(true)
 
   const fetchImages = React.useCallback(() => {
     fetch("/api/love-gallery")
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error("Error fetching images")
+        return res.json()
+      })
       .then(data => {
         if (data.images) setRemoteImages(data.images)
       })
@@ -87,6 +91,17 @@ export function PhotoMosaic() {
 
   React.useEffect(() => {
     fetchImages()
+    
+    // Initialize shuffled statics on mount to avoid hydration mismatch
+    const statics = staticImages.map((url, i) => ({ 
+      id: `static-${i}`, 
+      url, 
+      date: staticImageDates[url] || "", 
+      caption: "",
+      isRemote: false 
+    }))
+    setShuffledStatics([...statics].sort(() => Math.random() - 0.5))
+
     const handleUpdate = () => fetchImages()
     window.addEventListener('gallery-updated', handleUpdate)
     return () => window.removeEventListener('gallery-updated', handleUpdate)
@@ -100,20 +115,10 @@ export function PhotoMosaic() {
       caption: img.caption,
       isRemote: true 
     }))
-    const statics = staticImages.map((url, i) => ({ 
-      id: `static-${i}`, 
-      url, 
-      date: staticImageDates[url] || "", 
-      caption: "",
-      isRemote: false 
-    }))
-    
-    // Shuffle only the static images once, then keep that order
-    const shuffledStatics = [...statics].sort(() => Math.random() - 0.5);
     
     // Put remote images (newest ones) strictly at the beginning, then the shuffled local ones
     return [...remote, ...shuffledStatics]
-  }, [remoteImages])
+  }, [remoteImages, shuffledStatics])
 
   return (
     <div className="space-y-4">

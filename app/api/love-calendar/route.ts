@@ -6,28 +6,34 @@ const TABLE_NAME = "love_events"
 const getCategory = (value: string | null) => (value?.trim().length ? value : "love")
 
 export async function GET(request: NextRequest) {
-  const supabase = supabaseServerClient()
-  const category = getCategory(request.nextUrl.searchParams.get("category"))
+  try {
+    const supabase = supabaseServerClient()
+    const category = getCategory(request.nextUrl.searchParams.get("category"))
 
-  const { data, error } = await supabase
-    .from(TABLE_NAME)
-    .select("id, date, title, notes, created_at, done, category")
-    .eq("category", category)
-    .order("date", { ascending: true })
-    .order("created_at", { ascending: true })
+    const { data, error } = await supabase
+      .from(TABLE_NAME)
+      .select("id, date, title, notes, created_at, done, category")
+      .eq("category", category)
+      .order("date", { ascending: true })
+      .order("created_at", { ascending: true })
 
-  if (error) {
-    console.error("No se pudieron obtener los eventos", error)
-    return NextResponse.json({ message: "Error al cargar el calendario" }, { status: 500 })
+    if (error) {
+      console.error("No se pudieron obtener los eventos", error)
+      return NextResponse.json({ message: "Error al cargar el calendario de la base de datos" }, { status: 500 })
+    }
+
+    return NextResponse.json({ events: data ?? [] })
+  } catch (error: any) {
+    console.error("Configuration error in GET /api/love-calendar:", error)
+    return NextResponse.json({ 
+      message: "Error de configuración: Asegúrate de configurar las variables de Supabase en Vercel." 
+    }, { status: 500 })
   }
-
-  return NextResponse.json({ events: data ?? [] })
 }
 
 export async function POST(request: NextRequest) {
-  const supabase = supabaseServerClient()
-
   try {
+    const supabase = supabaseServerClient()
     const body = (await request.json()) as { date?: string; title?: string; notes?: string; category?: string }
     const { date, title, notes, category } = body
     const finalCategory = getCategory(category ?? null)
@@ -44,20 +50,23 @@ export async function POST(request: NextRequest) {
 
     if (error || !data) {
       console.error("No se pudo crear el evento", error)
-      return NextResponse.json({ message: "No se pudo guardar el plan" }, { status: 500 })
+      return NextResponse.json({ 
+        message: "No se pudo guardar el plan en la tabla 'love_events'. ¿Has creado la tabla correctamente?" 
+      }, { status: 500 })
     }
 
     return NextResponse.json({ event: data }, { status: 201 })
-  } catch (error) {
-    console.error("Error inesperado al crear el evento", error)
-    return NextResponse.json({ message: "Error al guardar el plan" }, { status: 500 })
+  } catch (error: any) {
+    console.error("Error inesperado al crear el evento:", error)
+    return NextResponse.json({ 
+      message: error.message || "Error inesperado al guardar el plan. Revisa la configuración de Supabase." 
+    }, { status: 500 })
   }
 }
 
 export async function PATCH(request: NextRequest) {
-  const supabase = supabaseServerClient()
-
   try {
+    const supabase = supabaseServerClient()
     const body = (await request.json()) as {
       id?: string
       updates?: Record<string, unknown>
@@ -84,9 +93,11 @@ export async function PATCH(request: NextRequest) {
     }
 
     return NextResponse.json({ event: data })
-  } catch (error) {
-    console.error("Error inesperado al actualizar el evento", error)
-    return NextResponse.json({ message: "Error al actualizar el plan" }, { status: 500 })
+  } catch (error: any) {
+    console.error("Error inesperado al actualizar el evento:", error)
+    return NextResponse.json({ 
+      message: error.message || "Error al actualizar el plan." 
+    }, { status: 500 })
   }
 }
 

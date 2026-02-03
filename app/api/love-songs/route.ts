@@ -4,26 +4,33 @@ import { supabaseServerClient } from "@/lib/supabase-server"
 const TABLE_NAME = "love_songs"
 
 export async function GET() {
-  const supabase = supabaseServerClient()
+  try {
+    const supabase = supabaseServerClient()
 
-  const { data, error } = await supabase
-    .from(TABLE_NAME)
-    .select("id, date, title, url, message, created_at")
-    .order("date", { ascending: false })
-    .order("created_at", { ascending: false })
+    const { data, error } = await supabase
+      .from(TABLE_NAME)
+      .select("id, date, title, url, message, created_at")
+      .order("date", { ascending: false })
+      .order("created_at", { ascending: false })
 
-  if (error) {
-    console.error("No se pudieron obtener las canciones dedicadas", error)
-    return NextResponse.json({ message: "Error al cargar la playlist" }, { status: 500 })
+    if (error) {
+      console.error("No se pudieron obtener las canciones dedicadas", error)
+      return NextResponse.json({ message: "Error al cargar la playlist de la base de datos" }, { status: 500 })
+    }
+
+    return NextResponse.json({ dedications: data ?? [] })
+  } catch (error: any) {
+    console.error("Configuration error in GET /api/love-songs:", error)
+    return NextResponse.json({ 
+      message: "Error de configuración: Asegúrate de configurar las variables de Supabase en Vercel." 
+    }, { status: 500 })
   }
-
-  return NextResponse.json({ dedications: data ?? [] })
 }
 
 export async function POST(request: NextRequest) {
-  const supabase = supabaseServerClient()
-
   try {
+    const supabase = supabaseServerClient()
+
     const body = (await request.json()) as {
       date?: string
       title?: string
@@ -50,13 +57,17 @@ export async function POST(request: NextRequest) {
 
     if (error || !data) {
       console.error("No se pudo guardar la dedicatoria musical", error)
-      return NextResponse.json({ message: "No se pudo guardar la canción" }, { status: 500 })
+      return NextResponse.json({ 
+        message: "No se pudo guardar la canción en la tabla 'love_songs'. ¿Has creado la tabla correctamente?" 
+      }, { status: 500 })
     }
 
     return NextResponse.json({ dedication: data }, { status: 201 })
-  } catch (error) {
-    console.error("Error inesperado al guardar la dedicatoria musical", error)
-    return NextResponse.json({ message: "Error al guardar la canción" }, { status: 500 })
+  } catch (error: any) {
+    console.error("Error inesperado al guardar la dedicatoria musical:", error)
+    return NextResponse.json({ 
+      message: error.message || "Error al guardar la canción. Revisa la configuración de Supabase." 
+    }, { status: 500 })
   }
 }
 

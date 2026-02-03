@@ -71,9 +71,38 @@ create index if not exists love_songs_created_at_idx
    on love_songs (created_at desc);
 ```
 
-Si ya tenías canciones guardadas en `love_events` con la categoría `love-songs`, puedes mover los datos manualmente insertándolos en esta tabla y eliminándolos de la anterior.
+### 3.3 Tabla `love_gallery`
 
-## 4. Variables de entorno en local
+Esta tabla almacena las imágenes que subes al muro de recuerdos. Ejecuta este comando en el **SQL Editor**:
+
+```sql
+create table if not exists love_gallery (
+   id uuid primary key default gen_random_uuid(),
+   url text not null,
+   caption text,
+   date date not null default current_date,
+   created_at timestamptz not null default now()
+);
+
+create index if not exists love_gallery_created_at_idx
+   on love_gallery (created_at desc);
+```
+
+## 4. Configurar Almacenamiento (Storage)
+
+Para que las fotos se guarden, necesitas crear un "Bucket" en Supabase:
+
+1. En el dashboard de Supabase, ve a **Storage**.
+2. Haz clic en **New Bucket**.
+3. Ponle el nombre exacto: `gallery`.
+4. Asegúrate de activarlo como **Public** (para que las fotos se puedan ver en la web).
+5. Haz clic en **Save**.
+
+### 4.1 Políticas de Storage (Opcional pero recomendado)
+
+Si activaste RLS en el storage, necesitas permitir que se suban archivos. Como usamos el `service_role` en el backend, generalmente no hace falta, pero si tienes problemas, crea una política que permita "INSERT" y "SELECT" para usuarios anónimos o autenticados en el bucket `gallery`.
+
+## 5. Variables de entorno en local
 
 1. Crea un archivo `.env.local` en la raíz del proyecto.
 2. Copia lo siguiente y reemplaza con tus valores reales:

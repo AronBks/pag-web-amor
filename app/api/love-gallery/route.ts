@@ -5,25 +5,32 @@ const TABLE_NAME = "love_gallery"
 const BUCKET_NAME = "gallery"
 
 export async function GET() {
-  const supabase = supabaseServerClient()
+  try {
+    const supabase = supabaseServerClient()
 
-  const { data, error } = await supabase
-    .from(TABLE_NAME)
-    .select("*")
-    .order("created_at", { ascending: false })
+    const { data, error } = await supabase
+      .from(TABLE_NAME)
+      .select("*")
+      .order("created_at", { ascending: false })
 
-  if (error) {
-    console.error("Error fetching gallery images:", error)
-    return NextResponse.json({ message: "Error al cargar la galería" }, { status: 500 })
+    if (error) {
+      console.error("Error fetching gallery images:", error)
+      return NextResponse.json({ message: "Error al cargar la galería de la base de datos" }, { status: 500 })
+    }
+
+    return NextResponse.json({ images: data ?? [] })
+  } catch (error: any) {
+    console.error("Configuration error in GET /api/love-gallery:", error)
+    return NextResponse.json({ 
+      message: "Error de configuración: Asegúrate de configurar SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY en Vercel." 
+    }, { status: 500 })
   }
-
-  return NextResponse.json({ images: data ?? [] })
 }
 
 export async function POST(request: NextRequest) {
-  const supabase = supabaseServerClient()
-
   try {
+    const supabase = supabaseServerClient()
+    
     const formData = await request.formData()
     const file = formData.get("file") as File
     const caption = formData.get("caption") as string | null
@@ -33,17 +40,21 @@ export async function POST(request: NextRequest) {
     }
 
     // 1. Upload file to Supabase Storage
+    const fileBuffer = await file.arrayBuffer()
     const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.]/g, "_")}`
+    
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from(BUCKET_NAME)
-      .upload(fileName, file, {
+      .upload(fileName, fileBuffer, {
         contentType: file.type,
         upsert: false
       })
 
     if (uploadError) {
       console.error("Error uploading to storage:", uploadError)
-      return NextResponse.json({ message: "Error al subir la imagen al almacenamiento" }, { status: 500 })
+      return NextResponse.json({ 
+        message: "Error al subir la imagen al storage. ¿Has creado el bucket 'gallery' como público?" 
+      }, { status: 500 })
     }
 
     // 2. Get public URL
@@ -64,15 +75,18 @@ export async function POST(request: NextRequest) {
 
     if (dbError) {
       console.error("Error saving to database:", dbError)
-      // Optional: Cleanup uploaded file if DB fails
       await supabase.storage.from(BUCKET_NAME).remove([fileName])
-      return NextResponse.json({ message: "Error al guardar la referencia en la base de datos" }, { status: 500 })
+      return NextResponse.json({ 
+        message: "Error al guardar en la tabla 'love_gallery'. ¿Has creado la tabla y las columnas correctamente?" 
+      }, { status: 500 })
     }
 
     return NextResponse.json({ image: dbData }, { status: 201 })
-  } catch (error) {
+  } catch (error: any) {
     console.error("Unexpected error during upload:", error)
-    return NextResponse.json({ message: "Error inesperado al subir la imagen" }, { status: 500 })
+    return NextResponse.json({ 
+      message: error.message || "Error inesperado al subir la imagen. Revisa la configuración de Supabase." 
+    }, { status: 500 })
   }
 }
 
