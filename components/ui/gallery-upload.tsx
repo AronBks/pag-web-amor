@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Camera, Loader2, Upload, X } from "lucide-react"
+import { Camera, Heart, Loader2, Upload, X } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 
 interface GalleryUploadProps {
@@ -52,9 +52,17 @@ export function GalleryUpload({ onUploadSuccess }: GalleryUploadProps) {
         body: formData,
       })
 
+      let errorMessage = "Error al subir la imagen"
+      
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.message || "Error al subir la imagen")
+        try {
+          const errorData = await response.json()
+          errorMessage = errorData.message || errorMessage
+        } catch (e) {
+          // If response is not JSON (e.g. 500 HTML error page)
+          errorMessage = `Error del servidor (${response.status}). Asegúrate de haber configurado el Storage y la tabla en Supabase.`
+        }
+        throw new Error(errorMessage)
       }
 
       toast({
