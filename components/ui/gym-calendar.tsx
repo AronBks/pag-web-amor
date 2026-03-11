@@ -19,20 +19,9 @@ import {
   NotebookPen,
   Flame,
   Sparkles,
-  Trash2,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useRemoteCalendar, type RemoteCalendarEvent } from "@/hooks/use-remote-calendar"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogCancel,
-} from "@/components/ui/alert-dialog"
 
 const getIsoDate = (date: Date) => format(date, "yyyy-MM-dd")
 
@@ -71,29 +60,22 @@ const sortByCreatedDesc = (items: RemoteCalendarEvent[]) =>
     (eventA, eventB) => parseISO(eventB.created_at).getTime() - parseISO(eventA.created_at).getTime()
   )
 
-type PendingDeletion =
-  | { type: "session"; item: RemoteCalendarEvent }
-  | { type: "note"; item: RemoteCalendarEvent }
-
 export function GymCalendar({ onBack }: { onBack: () => void }) {
   const {
     events: sessionEvents,
     isLoading: sessionsLoading,
     addEvent: addSession,
     updateEventStatus,
-    deleteEvent: deleteSession,
   } = useRemoteCalendar("gym")
   const {
     events: noteEvents,
     isLoading: notesLoading,
     addEvent: addNote,
-    deleteEvent: deleteNote,
   } = useRemoteCalendar("gym-notes")
   const [selectedDate, setSelectedDate] = useState<Date>(() => new Date())
   const [title, setTitle] = useState("")
   const [notes, setNotes] = useState("")
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [pendingDelete, setPendingDelete] = useState<PendingDeletion | null>(null)
   const [noteTitle, setNoteTitle] = useState("")
   const [noteDetails, setNoteDetails] = useState("")
   const [noteError, setNoteError] = useState<string | null>(null)
@@ -157,38 +139,6 @@ export function GymCalendar({ onBack }: { onBack: () => void }) {
     } else {
       setErrorMessage(null)
     }
-  }
-
-  const handleSessionDelete = async (id: string) => {
-    const result = await deleteSession(id)
-    if (!result.success) {
-      setErrorMessage(result.message ?? "No se pudo eliminar el entrenamiento. Intenta de nuevo.")
-    } else {
-      setErrorMessage(null)
-    }
-    return result
-  }
-
-  const handleNoteDelete = async (id: string) => {
-    const result = await deleteNote(id)
-    if (!result.success) {
-      setNoteError(result.message ?? "No se pudo eliminar la nota. Intenta de nuevo.")
-    } else {
-      setNoteError(null)
-    }
-    return result
-  }
-
-  const confirmDelete = async () => {
-    if (!pendingDelete) return
-
-    if (pendingDelete.type === "session") {
-      await handleSessionDelete(pendingDelete.item.id)
-    } else {
-      await handleNoteDelete(pendingDelete.item.id)
-    }
-
-    setPendingDelete(null)
   }
 
   const handleAddNote = async (event: FormEvent<HTMLFormElement>) => {
@@ -256,43 +206,6 @@ export function GymCalendar({ onBack }: { onBack: () => void }) {
 
   return (
     <>
-      <AlertDialog
-        open={Boolean(pendingDelete)}
-        onOpenChange={(open) => {
-          if (!open) {
-            setPendingDelete(null)
-          }
-        }}
-      >
-        <AlertDialogContent className="bg-white">
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              {pendingDelete?.type === "note"
-                ? "¿Eliminar esta nota compartida?"
-                : "¿Eliminar este entrenamiento?"}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {pendingDelete?.item
-                ? `Se eliminará "${pendingDelete.item.title}" del ${formatLongDate(
-                    parseISO(pendingDelete.item.date)
-                  )}.`
-                : "Se eliminará el elemento seleccionado."}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setPendingDelete(null)}>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-gradient-to-r from-rose-400 via-pink-400 to-fuchsia-400 text-white hover:from-rose-500 hover:via-pink-500 hover:to-fuchsia-500"
-              onClick={async () => {
-                await confirmDelete()
-              }}
-            >
-              Eliminar
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
       <div className="space-y-6">
       <BackButton onClick={onBack} label="← Volver" />
 
@@ -437,15 +350,6 @@ export function GymCalendar({ onBack }: { onBack: () => void }) {
                           <p className="text-sm text-gray-600">{session.notes}</p>
                         )}
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-gray-400 hover:text-red-500"
-                        onClick={() => setPendingDelete({ type: "session", item: session })}
-                        aria-label="Eliminar entrenamiento"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
                     </div>
                   </div>
                 )
@@ -485,7 +389,7 @@ export function GymCalendar({ onBack }: { onBack: () => void }) {
           <CardHeader className="pb-0">
             <CardTitle className="text-xl text-pink-700">Sesiones del día</CardTitle>
             <CardDescription>
-              Marca lo que ya completaste o ajusta lo que haga falta.
+              Marca lo que ya completaste para seguir sumando.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 pt-6">
@@ -514,15 +418,6 @@ export function GymCalendar({ onBack }: { onBack: () => void }) {
                   <p className="text-lg font-semibold text-pink-700">{session.title}</p>
                   {session.notes && <p className="text-sm text-gray-600">{session.notes}</p>}
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-gray-400 hover:text-red-500"
-                  onClick={() => setPendingDelete({ type: "session", item: session })}
-                  aria-label="Eliminar entrenamiento"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
               </div>
             ))}
           </CardContent>
@@ -610,15 +505,6 @@ export function GymCalendar({ onBack }: { onBack: () => void }) {
                         Registrado el {formatFullDateTime(parseISO(note.created_at))}
                       </p>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-gray-400 hover:text-red-500"
-                      onClick={() => setPendingDelete({ type: "note", item: note })}
-                      aria-label="Eliminar nota"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
                   </div>
                 ))}
               </div>
