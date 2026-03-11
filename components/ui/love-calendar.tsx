@@ -10,19 +10,9 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import BackButton from "@/components/ui/back-button"
 import { Badge } from "@/components/ui/badge"
-import { CalendarHeart, CheckCircle2, Circle, Clock, Heart, PencilLine, Sparkles, Trash2 } from "lucide-react"
+import { CalendarHeart, CheckCircle2, Circle, Clock, Heart, PencilLine, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useRemoteCalendar, type RemoteCalendarEvent } from "@/hooks/use-remote-calendar"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogCancel,
-} from "@/components/ui/alert-dialog"
 
 const getIsoDate = (date: Date) => format(date, "yyyy-MM-dd")
 
@@ -57,12 +47,11 @@ const formatFullDateTime = (date: Date) => {
 }
 
 export function LoveCalendar({ onBack }: { onBack: () => void }) {
-  const { events, isLoading, addEvent, updateEventStatus, deleteEvent } = useRemoteCalendar("love")
+  const { events, isLoading, addEvent, updateEventStatus } = useRemoteCalendar("love")
   const [selectedDate, setSelectedDate] = useState<Date>(() => new Date())
   const [title, setTitle] = useState("")
   const [notes, setNotes] = useState("")
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [pendingDelete, setPendingDelete] = useState<RemoteCalendarEvent | null>(null)
 
   const selectedDayKey = useMemo(() => getIsoDate(selectedDate), [selectedDate])
 
@@ -121,22 +110,6 @@ export function LoveCalendar({ onBack }: { onBack: () => void }) {
     }
   }
 
-  const handleDelete = async (id: string) => {
-    const result = await deleteEvent(id)
-    if (!result.success) {
-      setErrorMessage(result.message ?? "No se pudo eliminar el plan. Intenta de nuevo.")
-    } else {
-      setErrorMessage(null)
-    }
-    return result
-  }
-
-  const confirmDelete = async () => {
-    if (!pendingDelete) return
-    await handleDelete(pendingDelete.id)
-    setPendingDelete(null)
-  }
-
   const renderDay = ({ date }: DayContentProps) => {
     const dayNumber = format(date, "d")
     const iso = getIsoDate(date)
@@ -172,35 +145,6 @@ export function LoveCalendar({ onBack }: { onBack: () => void }) {
 
   return (
     <>
-      <AlertDialog
-        open={Boolean(pendingDelete)}
-        onOpenChange={(open) => {
-          if (!open) {
-            setPendingDelete(null)
-          }
-        }}
-      >
-        <AlertDialogContent className="bg-white">
-          <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar este plan?</AlertDialogTitle>
-            <AlertDialogDescription>
-              {pendingDelete
-                ? `Se eliminará "${pendingDelete.title}" del ${formatLongDate(parseISO(pendingDelete.date))}.`
-                : "Se eliminará el plan seleccionado."}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setPendingDelete(null)}>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600"
-              onClick={() => void confirmDelete()}
-            >
-              Eliminar
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
       <div className="space-y-6">
       <BackButton onClick={onBack} label="← Volver" />
 
@@ -349,15 +293,6 @@ export function LoveCalendar({ onBack }: { onBack: () => void }) {
                           <p className="text-sm text-gray-600">{calendarEvent.notes}</p>
                         )}
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-gray-400 hover:text-red-500"
-                        onClick={() => setPendingDelete(calendarEvent)}
-                        aria-label="Eliminar plan"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
                     </div>
                   </div>
                 )
@@ -373,7 +308,7 @@ export function LoveCalendar({ onBack }: { onBack: () => void }) {
             Planes para {formatLongDate(selectedDate)}
           </CardTitle>
           <CardDescription>
-            Marca lo que ya hicimos o elimina lo que ya no nos haga falta.
+            Marca lo que ya hicimos para celebrar nuestro amor.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 pt-6">
@@ -411,15 +346,6 @@ export function LoveCalendar({ onBack }: { onBack: () => void }) {
                   Guardado el {formatFullDateTime(parseISO(calendarEvent.created_at))}
                 </p>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-gray-400 hover:text-red-500"
-                onClick={() => setPendingDelete(calendarEvent)}
-                aria-label="Eliminar plan"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
             </div>
           ))}
         </CardContent>
